@@ -9,9 +9,9 @@ import { primarySocials } from "../data/socials";
  * Photo is optional: drop an image at public/profile.webp; if absent we render
  * a branded monogram so the layout never breaks.
  */
-export function About() {
+export function About({ glow = false }: { glow?: boolean }) {
   return (
-    <Section id="about" className="section-pad">
+    <Section id="about" className="section-pad" glow={glow}>
       <div className="mx-auto max-w-5xl">
         <p className="eyebrow mb-3">About</p>
         <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">

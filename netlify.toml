@@ -10,3 +10,16 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Security headers (served on every response via Netlify's CDN).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Enforce HTTPS for 1 year; cover subdomains; eligible for the HSTS preload list.
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    # Isolate this document's browsing context from cross-origin openers.
+    Cross-Origin-Opener-Policy = "same-origin"
+    # Only same-origin documents may embed our resources.
+    Cross-Origin-Resource-Policy = "same-origin"
+    # Stop MIME sniffing.
+    X-Content-Type-Options = "nosniff"

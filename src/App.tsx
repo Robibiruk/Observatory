@@ -4,6 +4,9 @@ import { Loader } from "./sections/Loader";
 import { Hero } from "./sections/Hero";
 import { useReducedMotion as useRM } from "./lib/useReducedMotion";
 import { useLenis } from "./lib/useLenis";
+import {
+  ActiveSectionContext,
+} from "./lib/activeSection";
 
 // Heavy / below-the-fold sections are code-split and lazy-mounted so the
 // initial bundle and first paint stay lean (Lighthouse guardrail).
@@ -31,6 +34,16 @@ const Footer = lazy(() =>
 
 // The R3F starfield is its own lazy chunk too.
 const Starfield = lazy(() => import("./components/Starfield"));
+
+const NAV_IDS = [
+  "hero",
+  "about",
+  "projects",
+  "timeline",
+  "constellation",
+  "museum",
+  "contact",
+];
 
 /** Mounts children only once they scroll near the viewport (IntersectionObserver). */
 function LazyMount({
@@ -65,9 +78,29 @@ function LazyMount({
 export default function App() {
   const reduced = useRM();
   useLenis();
+  const [active, setActive] = useState("hero");
+
+  // Single scroll-spy: drives both the navbar highlight and the per-section
+  // glow. Lifted here so it isn't duplicated by the Navbar.
+  useEffect(() => {
+    const sections = NAV_IDS.map((id) => document.getElementById(id)).filter(
+      Boolean
+    ) as HTMLElement[];
+    if (!sections.length) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    sections.forEach((s) => obs.observe(s));
+    return () => obs.disconnect();
+  }, []);
 
   return (
-    <>
+    <ActiveSectionContext.Provider value={active}>
       <Loader />
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-background" />
@@ -76,9 +109,9 @@ export default function App() {
             <Starfield />
           </Suspense>
         )}
-        {/* soft radial nebula glow */}
-        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[40vh] w-[40vh] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
-        <div className="pointer-events-none absolute right-1/4 bottom-1/4 h-[30vh] w-[30vh] rounded-full bg-accent/10 blur-[120px]" />
+        {/* The circular nebula glow now lives per-section (see Section `glow`)
+            and only fades in for the active nav section — so it appears on
+            every section you scroll/click to, not only the homepage. */}
       </div>
 
       <Navbar />
@@ -88,37 +121,37 @@ export default function App() {
 
         <LazyMount>
           <Suspense fallback={null}>
-            <About />
+            <About glow />
           </Suspense>
         </LazyMount>
 
         <LazyMount>
           <Suspense fallback={null}>
-            <Projects />
+            <Projects glow />
           </Suspense>
         </LazyMount>
 
         <LazyMount>
           <Suspense fallback={null}>
-            <TimeMachine />
+            <TimeMachine glow />
           </Suspense>
         </LazyMount>
 
         <LazyMount>
           <Suspense fallback={null}>
-            <Constellation />
+            <Constellation glow />
           </Suspense>
         </LazyMount>
 
         <LazyMount>
           <Suspense fallback={null}>
-            <Museum />
+            <Museum glow />
           </Suspense>
         </LazyMount>
 
         <LazyMount>
           <Suspense fallback={null}>
-            <Contact />
+            <Contact glow />
           </Suspense>
         </LazyMount>
 
@@ -128,6 +161,6 @@ export default function App() {
           </Suspense>
         </LazyMount>
       </main>
-    </>
+    </ActiveSectionContext.Provider>
   );
 }

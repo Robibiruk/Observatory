@@ -186,7 +186,7 @@ function ProjectModal({
  * Reduced-motion users get a static, swipeable row (no auto-animation);
  * clicking a card still opens the modal.
  */
-export function Museum() {
+export function Museum({ glow = false }: { glow?: boolean }) {
   const [active, setActive] = useState<Project | null>(null);
   const reduced =
     typeof window !== "undefined" &&
@@ -260,7 +260,7 @@ export function Museum() {
   const track = [...museumProjects, ...museumProjects];
 
   return (
-    <Section id="museum" className="section-pad">
+    <Section id="museum" className="section-pad" glow={glow}>
       <div className="mx-auto max-w-6xl">
         <p className="eyebrow mb-3">Museum</p>
         <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">

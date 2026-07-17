@@ -17,11 +17,11 @@ const STATUS_LABEL: Record<Project["status"], string> = {
  * overview / architecture / features / lessons. Keyboard + screen-reader safe:
  * cards are real buttons; the detail panel is focus-trapped-ish via autofocus.
  */
-export function Projects() {
+export function Projects({ glow = false }: { glow?: boolean }) {
   const [open, setOpen] = useState<Project | null>(null);
 
   return (
-    <Section id="projects" className="section-pad">
+    <Section id="projects" className="section-pad" glow={glow}>
       <div className="mx-auto max-w-6xl">
         <p className="eyebrow mb-3">Projects Observatory</p>
         <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">

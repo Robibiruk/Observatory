@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { site } from "../data/site";
 import { MagneticButton } from "./MagneticButton";
+import { useActiveSection } from "../lib/activeSection";
 
 const NAV = [
   { id: "hero", label: "Home" },
@@ -16,25 +17,11 @@ const NAV = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("hero");
   const [scrolled, setScrolled] = useState(false);
+  const active = useActiveSection();
 
-  // Scroll-spy: highlight the section currently in view.
-  useEffect(() => {
-    const sections = NAV.map((n) => document.getElementById(n.id)).filter(
-      Boolean
-    ) as HTMLElement[];
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id);
-        });
-      },
-      { rootMargin: "-45% 0px -50% 0px" }
-    );
-    sections.forEach((s) => obs.observe(s));
-    return () => obs.disconnect();
-  }, []);
+  // Scroll-spy now lives in App (single source of truth) and is shared via
+  // context, so the navbar highlight and the per-section glow stay in sync.
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);

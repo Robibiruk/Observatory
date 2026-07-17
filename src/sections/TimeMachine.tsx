@@ -205,7 +205,7 @@ function MissionCard({
 /* ------------------------------------------------------------------ */
 /* Main orchestrator                                                  */
 /* ------------------------------------------------------------------ */
-export function TimeMachine() {
+export function TimeMachine({ glow = false }: { glow?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -279,7 +279,7 @@ export function TimeMachine() {
   const pal = paletteOf(activeChapter);
 
   return (
-    <Section id="timeline" className="section-pad relative overflow-hidden" ref={containerRef}>
+    <Section id="timeline" className="section-pad relative overflow-hidden" ref={containerRef} glow={glow}>
       {/* No local space backdrop — the section background is now plain #050816
           so it matches every other section on the site. The interactive easter
           eggs below are small clickable accents, not background art. */}

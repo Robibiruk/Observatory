@@ -9,7 +9,7 @@ import { Section } from "../components/Section";
  * Hover OR keyboard-focus OR click a tech node highlights the connected project
  * cards and dims the rest. Never hover-only (accessibility requirement).
  */
-export function Constellation() {
+export function Constellation({ glow = false }: { glow?: boolean }) {
   const [active, setActive] = useState<string | null>(null);
 
   const connectedSlugs = active
@@ -17,7 +17,7 @@ export function Constellation() {
     : null;
 
   return (
-    <Section id="constellation" className="section-pad">
+    <Section id="constellation" className="section-pad" glow={glow}>
       <div className="mx-auto max-w-6xl">
         <p className="eyebrow mb-3">Technology Constellation</p>
         <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">

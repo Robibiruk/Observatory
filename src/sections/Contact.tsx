@@ -14,7 +14,7 @@ type SubmitStatus = "idle" | "submitting" | "success" | "error";
  * "contact" form. Success = small confirmation animation, never a page
  * redirect.
  */
-export function Contact() {
+export function Contact({ glow = false }: { glow?: boolean }) {
   const reduced = useReducedMotion();
   const [status, setStatus] = useState<SubmitStatus>("idle");
 
@@ -38,7 +38,7 @@ export function Contact() {
   };
 
   return (
-    <Section id="contact" className="section-pad">
+    <Section id="contact" className="section-pad" glow={glow}>
       <div className="mx-auto max-w-3xl text-center">
         <p className="eyebrow mb-3">Mission Control</p>
         <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">
