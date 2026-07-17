@@ -52,23 +52,33 @@ export function Navbar() {
           <span className="text-primary">.</span>
         </MagneticButton>
 
-        {/* Desktop links */}
+        {/* Desktop links — the rounded "cover" is a single pill that slides
+            (via layoutId) to whichever nav item is active (scroll-spy) *or*
+            was just clicked. */}
         <ul className="hidden items-center gap-1 md:flex">
-          {NAV.map((n) => (
-            <li key={n.id}>
-              <button
-                onClick={() => go(n.id)}
-                aria-current={active === n.id ? "true" : undefined}
-                className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
-                  active === n.id
-                    ? "bg-primary/15 text-highlight"
-                    : "text-muted hover:text-text"
-                }`}
-              >
-                {n.label}
-              </button>
-            </li>
-          ))}
+          {NAV.map((n) => {
+            const isActive = active === n.id;
+            return (
+              <li key={n.id} className="relative">
+                <button
+                  onClick={() => go(n.id)}
+                  aria-current={isActive ? "true" : undefined}
+                  className={`relative z-10 rounded-full px-3 py-1.5 text-sm transition-colors ${
+                    isActive ? "text-highlight" : "text-muted hover:text-text"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-pill"
+                      className="absolute inset-0 -z-10 rounded-full bg-primary/15"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  {n.label}
+                </button>
+              </li>
+            );
+          })}
         </ul>
 
         {/* Mobile toggle */}

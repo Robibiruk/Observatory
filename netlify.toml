@@ -23,3 +23,17 @@
     Cross-Origin-Resource-Policy = "same-origin"
     # Stop MIME sniffing.
     X-Content-Type-Options = "nosniff"
+
+    # Block framing (clickjacking). CSP frame-ancestors is the modern equivalent;
+    # X-Frame-Options is the legacy fallback for older browsers.
+    X-Frame-Options = "SAMEORIGIN"
+    # Limit how much referrer info leaves the site.
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Content Security Policy. External assets are limited to same-origin build
+    # files plus Google Fonts (stylesheet host + font file host). No inline
+    # scripts (Vite emits external module chunks), so script-src stays strict.
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' fonts.googleapis.com 'unsafe-inline'; font-src 'self' fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; object-src 'none'"
+
+    # Permissions Policy: disable powerful browser features this site doesn't use.
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=(), browsing-topics=(), payment=(), usb=(), publickey-credentials-get=(), screen-wake-lock=()"
