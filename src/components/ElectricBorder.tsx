@@ -348,13 +348,6 @@ const ElectricBorder = ({
           className="absolute inset-0 rounded-[inherit] pointer-events-none"
           style={{ border: `2px solid ${color}`, filter: "blur(4px)" }}
         />
-        <div
-          className="absolute inset-0 rounded-[inherit] pointer-events-none -z-[1] scale-110 opacity-30"
-          style={{
-            filter: "blur(32px)",
-            background: `linear-gradient(-30deg, ${color}, transparent, ${color})`
-          }}
-        />
       </div>
       <div className="relative rounded-[inherit] z-[1]">{children}</div>
     </div>

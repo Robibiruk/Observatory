@@ -207,12 +207,10 @@ function MissionCard({
 /* ------------------------------------------------------------------ */
 export function TimeMachine() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollY, setScrollY] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [reduced, setReduced] = useState(false);
   const [achievement, setAchievement] = useState<string | null>(null);
-  const [shootKey, setShootKey] = useState(0);
   const [morseOn, setMorseOn] = useState(false);
 
   // Radar pulses in morse rhythm; clicking decodes the message.
@@ -250,7 +248,6 @@ export function TimeMachine() {
       const p = Math.min(1, Math.max(0, -rect.top / (total || 1)));
       setProgress(p);
       setActiveIndex(Math.min(timeline.length - 1, Math.floor(p * timeline.length)));
-      setScrollY(window.scrollY);
       raf = 0;
     };
     const rafScroll = () => {
@@ -275,20 +272,6 @@ export function TimeMachine() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // random shooting star every 20-40s
-  useEffect(() => {
-    if (reduced) return;
-    let timer: number;
-    const schedule = () => {
-      timer = window.setTimeout(() => {
-        setShootKey((k) => k + 1);
-        schedule();
-      }, 20000 + Math.random() * 20000);
-    };
-    schedule();
-    return () => clearTimeout(timer);
-  }, [reduced]);
-
   // rare hidden astronaut (≈8% per load)
   const showAstronaut = useRef(Math.random() < 0.08).current;
 
@@ -297,112 +280,79 @@ export function TimeMachine() {
 
   return (
     <Section id="timeline" className="section-pad relative overflow-hidden" ref={containerRef}>
-      {/* living space backdrop (parallax) */}
-        <div className="obs-backdrop" aria-hidden="true">
-          <div className="obs-nebula" style={{ transform: `translateY(${scrollY * 0.05}px)` }} />
-          {[0.12, 0.22, 0.35].map((s, i) => (
-            <div
-              key={i}
-              className="obs-stars"
-              style={{ transform: `translateY(${scrollY * s}px)`, opacity: 0.5 + i * 0.2, backgroundSize: `${130 - i * 25}px ${130 - i * 25}px` }}
-            />
-          ))}
-          {/* drifting planets per chapter */}
-          {timeline.map((m, i) => (
-            <span
-              key={m.id}
-              className="obs-planet-drift rounded-full"
-              style={{
-                left: `${6 + i * 16}%`,
-                top: `${10 + (i % 3) * 28}%`,
-                width: 70 + i * 8,
-                height: 70 + i * 8,
-                background: `radial-gradient(circle at 30% 30%, ${paletteOf(m.chapter).color}, ${paletteOf(m.chapter).glow})`,
-                boxShadow: `0 0 50px ${paletteOf(m.chapter).glow}`,
-                transform: `translateY(${scrollY * (0.08 + i * 0.02)}px)`,
-                opacity: 0.4,
-              }}
-            />
-          ))}
-          {/* satellite crossing — detailed CSS craft */}
-          <div className="obs-satellite" aria-hidden>
-            <div className="obs-sat-inner">
-              <span className="obs-sat-panel left" />
-              <span className="obs-sat-body" />
-              <span className="obs-sat-panel right" />
-              <span className="obs-sat-antenna" />
-              <span className="obs-sat-dish" />
-              <span className="obs-sat-blink" />
-            </div>
-          </div>
-          {/* space station — click opens CV */}
-          <button
-            className="obs-station"
-            onClick={() => site.cvUrl && window.open(site.cvUrl, "_blank")}
-            aria-label="Open resume"
-            title="Space station — open resume"
-          >
-            <span className="block h-2 w-6 rounded-full bg-white/60" />
-            <span className="block h-6 w-2 rounded-full bg-white/40" />
-          </button>
-          {/* rare astronaut */}
-          {showAstronaut && (
-            <button
-              className="obs-astronaut"
-              onClick={() => setAchievement("Astronaut Found — hidden explorer unlocked")}
-              aria-label="Hidden astronaut"
-              title="?"
-            >
-              🧑‍🚀
-            </button>
-          )}
-          {/* shooting star */}
-          <span key={shootKey} className="obs-shooting-star" />
-          {/* morse radar */}
-          <button
-            className="obs-radar"
-            onClick={() => {
-              setMorseOn(true);
-              decodeMorse();
-            }}
-            aria-label="Radar"
-            title="Blinks in morse…"
-          >
-            <span className={`obs-radar-dot ${morseOn ? "on" : ""}`} />
-          </button>
-          {/* achievement toast */}
-          {achievement && (
-            <div className="obs-toast" onClick={() => setAchievement(null)}>
-              🏆 {achievement}
-            </div>
-          )}
+      {/* No local space backdrop — the section background is now plain #050816
+          so it matches every other section on the site. The interactive easter
+          eggs below are small clickable accents, not background art. */}
+      {/* space station — click opens CV */}
+      <button
+        className="obs-station"
+        onClick={() => site.cvUrl && window.open(site.cvUrl, "_blank")}
+        aria-label="Open resume"
+        title="Space station — open resume"
+      >
+        <span className="block h-2 w-6 rounded-full bg-white/60" />
+        <span className="block h-6 w-2 rounded-full bg-white/40" />
+      </button>
+      {/* rare astronaut */}
+      {showAstronaut && (
+        <button
+          className="obs-astronaut"
+          onClick={() => setAchievement("Astronaut Found — hidden explorer unlocked")}
+          aria-label="Hidden astronaut"
+          title="?"
+        >
+          🧑‍🚀
+        </button>
+      )}
+      {/* morse radar */}
+      <button
+        className="obs-radar"
+        onClick={() => {
+          setMorseOn(true);
+          decodeMorse();
+        }}
+        aria-label="Radar"
+        title="Blinks in morse…"
+      >
+        <span className={`obs-radar-dot ${morseOn ? "on" : ""}`} />
+      </button>
+      {/* achievement toast */}
+      {achievement && (
+        <div className="obs-toast" onClick={() => setAchievement(null)}>
+          🏆 {achievement}
         </div>
+      )}
 
-        {/* edge fade — blends the space backdrop into the page background so
-            the nebula/stars don't get cut off hard against adjacent sections */}
-        <div className="obs-edge-fade" aria-hidden="true" />
-
-        {/* HUD */}
+        {/* HUD overlays the whole section, above the border */}
         {!reduced && <Hud activeIndex={activeIndex} progress={progress} />}
 
-        {/* header */}
-        <div className="relative z-10 mx-auto max-w-6xl text-center">
-          <p className="eyebrow mb-3 text-sm sm:text-base">The Observatory Expedition</p>
-          <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">
-            Become the mission commander
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-muted">
-            Every scroll is a journey farther into the universe. Each milestone is a newly
-            discovered sector. The scanner follows your cursor — look closer.
-          </p>
-        </div>
+        {/* Electric border wraps the ENTIRE timeline content: titles, mission
+            cards, the spinning/current-chapter planet, and the closing
+            invitation. Decorative backdrop + HUD stay behind as siblings. */}
+        <ElectricBorder
+          color="#6C7CFF"
+          speed={1}
+          chaos={0.12}
+          borderRadius={28}
+          className="relative z-10 px-4 py-8 sm:px-8 sm:py-12"
+        >
+          {/* header */}
+          <div className="mx-auto max-w-6xl text-center">
+            <p className="eyebrow mb-3 text-sm sm:text-base">The Observatory Expedition</p>
+            <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">
+              Become the mission commander
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted">
+              Every scroll is a journey farther into the universe. Each milestone is a newly
+              discovered sector. The scanner follows your cursor — look closer.
+            </p>
+          </div>
 
-        {/* body: progress rail + constellation + planet */}
-        <div className="relative z-10 mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-[160px_1fr_220px]">
-          <ProgressRail progress={progress} activeIndex={activeIndex} />
+          {/* body: progress rail + constellation + planet */}
+          <div className="relative mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-[160px_1fr_220px]">
+            <ProgressRail progress={progress} activeIndex={activeIndex} />
 
-          {/* mission cards */}
-          <ElectricBorder color="#6C7CFF" speed={1} chaos={0.12} borderRadius={28} className="px-4 py-4 sm:px-6 sm:py-6">
+            {/* mission cards */}
             <div className="relative space-y-24 sm:space-y-28">
               {timeline.map((m, i) => (
                 <MissionCard
@@ -414,37 +364,37 @@ export function TimeMachine() {
                 />
               ))}
             </div>
-          </ElectricBorder>
 
-          {/* current chapter planet */}
-          <div className="hidden flex-col items-center gap-3 lg:flex">
-            <div className="h-40 w-40">
-              {!reduced &&
-                (activeChapter === "Earth" ? (
-                  <RotatingEarth size={160} />
-                ) : (
-                  <Planet color={pal.color} ring={pal.ring} className="h-full w-full" />
-                ))}
-            </div>
-            <div className="text-center font-mono text-[10px] uppercase tracking-widest text-primary/60">
-              <div className="text-text">{activeChapter}</div>
-              <div>{timeline[activeIndex]?.chapterLabel}</div>
+            {/* current chapter planet */}
+            <div className="hidden flex-col items-center gap-3 lg:flex">
+              <div className="h-40 w-40">
+                {!reduced &&
+                  (activeChapter === "Earth" ? (
+                    <RotatingEarth size={160} />
+                  ) : (
+                    <Planet color={pal.color} ring={pal.ring} className="h-full w-full" />
+                  ))}
+              </div>
+              <div className="text-center font-mono text-[10px] uppercase tracking-widest text-primary/60">
+                <div className="text-text">{activeChapter}</div>
+                <div>{timeline[activeIndex]?.chapterLabel}</div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* final invitation into contact */}
-        <div className="relative z-10 mx-auto mt-24 max-w-2xl text-center">
-          <div className="font-mono text-xs uppercase tracking-widest text-primary/60">Next Mission</div>
-          <h3 className="mt-2 font-display text-3xl font-bold text-text">Building the Future</h3>
-          <p className="mt-2 text-muted">Join the journey.</p>
-          <a
-            href="#contact"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition hover:shadow-glow-primary"
-          >
-            <Rocket size={16} /> Contact Me
-          </a>
-        </div>
+          {/* final invitation into contact */}
+          <div className="relative mx-auto mt-24 max-w-2xl text-center">
+            <div className="font-mono text-xs uppercase tracking-widest text-primary/60">Next Mission</div>
+            <h3 className="mt-2 font-display text-3xl font-bold text-text">Building the Future</h3>
+            <p className="mt-2 text-muted">Join the journey.</p>
+            <a
+              href="#contact"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition hover:shadow-glow-primary"
+            >
+              <Rocket size={16} /> Contact Me
+            </a>
+          </div>
+        </ElectricBorder>
     </Section>
   );
 }

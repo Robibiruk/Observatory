@@ -6,3 +6,10 @@ dist-ssr
 .env.*
 .env.example
 .DS_Store
+
+# Hallmark audit artifacts
+.hallmark
+skills/hallmark
+
+# JetBrains / IDE
+.idea

@@ -39,44 +39,6 @@ export const projects: Project[] = [
       "Keeping state local-first (localStorage mirror) made the assistant feel instant and resilient, even when Firebase writes silently fail.",
   },
   {
-    slug: "eventhub",
-    title: "EventHub",
-    oneLiner:
-      "Two-sided event ticketing SaaS for Ethiopia — discovery, checkout, and Chapa payments.",
-    status: "prototype", // corrected: EventHub is the prototype
-    stack: [
-      "React",
-      "TypeScript",
-      "Vite",
-      "Tailwind",
-      "Zustand",
-      "React Query",
-      "Express",
-      "MongoDB",
-      "JWT",
-      "Chapa",
-    ],
-    featured: true,
-    image: "/projects/eventhub.png",
-    alt: "EventHub event listing and checkout screen with Ethiopian events",
-    links: {
-      // live: prototype — no live deployment yet
-      repo: "https://github.com/Robibiruk/Event-Hub",
-    },
-    overview:
-      "EventHub is an event marketplace connecting organizers and attendees. Organizers publish events and issue QR tickets; attendees discover Ethiopian events, buy with Chapa, and get QR-coded passes. The backend is a typed Express + MongoDB API with auth, rate limiting, and validation.",
-    architecture:
-      "Monorepo: Express + Mongoose API (JWT auth, Zod validation, Helmet, rate limiting, QR ticket generation) talking to a React/TypeScript/Vite client using Zustand for cart/UI state and React Query for server cache. Payments via Chapa; tickets rendered as scannable QR codes.",
-    features: [
-      "Organizer dashboards + attendee-facing discovery",
-      "Chapa payment integration with QR tickets",
-      "Typed end-to-end (Zod on server, TS on client)",
-      "Secure-by-default API (Helmet, rate-limit, JWT)",
-    ],
-    lessons:
-      "Splitting client state (Zustand) from server cache (React Query) removed a whole class of stale-UI bugs versus a single global store.",
-  },
-  {
     slug: "medreminder",
     title: "MedReminder",
     oneLiner:
@@ -111,6 +73,44 @@ export const projects: Project[] = [
     ],
     lessons:
       "Letting users type reminders in plain language (vs rigid forms) dramatically lowered onboarding friction — the AI parsing step earned its place.",
+  },
+  {
+    slug: "eventhub",
+    title: "EventHub",
+    oneLiner:
+      "Two-sided event ticketing SaaS for Ethiopia — discovery, checkout, and Chapa payments.",
+    status: "prototype", // corrected: EventHub is the prototype
+    stack: [
+      "React",
+      "TypeScript",
+      "Vite",
+      "Tailwind",
+      "Zustand",
+      "React Query",
+      "Express",
+      "MongoDB",
+      "JWT",
+      "Chapa",
+    ],
+    featured: false, // not featured: keeps MedReminder as the 2nd bento tile
+    image: "/projects/eventhub.png",
+    alt: "EventHub event listing and checkout screen with Ethiopian events",
+    links: {
+      // live: prototype — no live deployment yet
+      repo: "https://github.com/Robibiruk/Event-Hub",
+    },
+    overview:
+      "EventHub is an event marketplace connecting organizers and attendees. Organizers publish events and issue QR tickets; attendees discover Ethiopian events, buy with Chapa, and get QR-coded passes. The backend is a typed Express + MongoDB API with auth, rate limiting, and validation.",
+    architecture:
+      "Monorepo: Express + Mongoose API (JWT auth, Zod validation, Helmet, rate limiting, QR ticket generation) talking to a React/TypeScript/Vite client using Zustand for cart/UI state and React Query for server cache. Payments via Chapa; tickets rendered as scannable QR codes.",
+    features: [
+      "Organizer dashboards + attendee-facing discovery",
+      "Chapa payment integration with QR tickets",
+      "Typed end-to-end (Zod on server, TS on client)",
+      "Secure-by-default API (Helmet, rate-limit, JWT)",
+    ],
+    lessons:
+      "Splitting client state (Zustand) from server cache (React Query) removed a whole class of stale-UI bugs versus a single global store.",
   },
 ];
 

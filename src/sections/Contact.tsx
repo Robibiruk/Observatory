@@ -1,45 +1,40 @@
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { useForm, ValidationError } from "@formspree/react";
-import { Send, CheckCircle2, Mail, Github, Linkedin } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle, Mail, Github, Linkedin } from "lucide-react";
 import { site } from "../data/site";
 import { Section } from "../components/Section";
 
-const FORMSPREE_ID = import.meta.env.VITE_FORMSPREE_ID;
-const FORMSPREE_READY =
-  FORMSPREE_ID && FORMSPREE_ID !== "your-formspree-form-id";
+type SubmitStatus = "idle" | "submitting" | "success" | "error";
 
 /**
  * Contact / Mission Control — "Transmit Signal" form.
- * POSTs to Formspree when VITE_FORMSPREE_ID is set; otherwise falls back to a
- * mailto: link (no backend, ever). Success = small confirmation animation,
- * never a page redirect.
+ * Powered by Netlify Forms (no backend, no third-party service). The form is
+ * detected at build time via the static `public/contact-form.html` stub; this
+ * live form posts to the same origin ("/") and Netlify routes it to the
+ * "contact" form. Success = small confirmation animation, never a page
+ * redirect.
  */
 export function Contact() {
   const reduced = useReducedMotion();
-  const [mailtoSent, setMailtoSent] = useState(false);
+  const [status, setStatus] = useState<SubmitStatus>("idle");
 
-  // useForm must be called unconditionally; pass a dummy id when not configured.
-  const [state, handleSubmit] = useForm(
-    FORMSPREE_READY ? FORMSPREE_ID! : "xgebkzvq"
-  );
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if (FORMSPREE_READY) {
-      handleSubmit(e); // Formspree handles it
-      return;
-    }
-    // mailto fallback
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const name = (form.elements.namedItem("name") as HTMLInputElement).value;
-    const message = (
-      form.elements.namedItem("message") as HTMLTextAreaElement
-    ).value;
-    const subject = encodeURIComponent(`Signal from ${name || "a visitor"}`);
-    const body = encodeURIComponent(message);
-    window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`;
-    setMailtoSent(true);
+    setStatus("submitting");
+    try {
+      const data = new FormData(form);
+      // Netlify routes the submission by the hidden `form-name` field.
+      await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(data as unknown as Record<string, string>).toString()
+      });
+      setStatus("success");
+      form.reset();
+    } catch {
+      setStatus("error");
+    }
   };
 
   return (
@@ -79,9 +74,23 @@ export function Contact() {
         </div>
 
         <form
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
           onSubmit={onSubmit}
           className="glass mx-auto mt-10 space-y-4 rounded-3xl p-6 text-left sm:p-8"
         >
+          {/* Netlify: hidden form-name must match the detected form */}
+          <input type="hidden" name="form-name" value="contact" />
+          {/* Honeypot: hidden from humans, catches bots */}
+          <p className="hidden">
+            <label>
+              Don&apos;t fill this out if you&apos;re human:
+              <input name="bot-field" />
+            </label>
+          </p>
+
           <div>
             <label htmlFor="name" className="mb-1 block text-sm text-muted">
               Name
@@ -92,12 +101,6 @@ export function Contact() {
               required
               className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-text outline-none transition-colors focus:border-primary"
               placeholder="Your name"
-            />
-            <ValidationError
-              prefix="Name"
-              field="name"
-              errors={state.errors}
-              className="mt-1 text-xs text-red-400"
             />
           </div>
 
@@ -113,12 +116,6 @@ export function Contact() {
               className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-text outline-none transition-colors focus:border-primary"
               placeholder="you@domain.com"
             />
-            <ValidationError
-              prefix="Email"
-              field="email"
-              errors={state.errors}
-              className="mt-1 text-xs text-red-400"
-            />
           </div>
 
           <div>
@@ -133,29 +130,19 @@ export function Contact() {
               className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-text outline-none transition-colors focus:border-primary"
               placeholder="What's on your mind?"
             />
-            <ValidationError
-              prefix="Message"
-              field="message"
-              errors={state.errors}
-              className="mt-1 text-xs text-red-400"
-            />
           </div>
 
           <button
             type="submit"
-            disabled={state.submitting}
+            disabled={status === "submitting"}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-accent px-6 py-3 font-medium text-white shadow-glow transition-shadow hover:shadow-glow-accent disabled:opacity-60"
           >
             <Send size={16} />
-            {state.submitting
-              ? "Transmitting…"
-              : FORMSPREE_READY
-              ? "Transmit Signal"
-              : "Transmit via email"}
+            {status === "submitting" ? "Transmitting…" : "Transmit Signal"}
           </button>
 
           <AnimatePresence>
-            {(state.succeeded || mailtoSent) && (
+            {status === "success" && (
               <motion.div
                 initial={reduced ? false : { opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -164,9 +151,19 @@ export function Contact() {
                 role="status"
               >
                 <CheckCircle2 size={16} />
-                {FORMSPREE_READY
-                  ? "Signal received — I'll reply soon."
-                  : "Opening your mail client…"}
+                Signal received — I&apos;ll reply soon.
+              </motion.div>
+            )}
+            {status === "error" && (
+              <motion.div
+                initial={reduced ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center justify-center gap-2 text-sm text-red-400"
+                role="alert"
+              >
+                <AlertCircle size={16} />
+                Transmission failed — try emailing me directly.
               </motion.div>
             )}
           </AnimatePresence>

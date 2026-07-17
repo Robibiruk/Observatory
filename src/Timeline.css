@@ -3,54 +3,7 @@
    (intentionally isolated from the rest of the site)
    ============================================================ */
 
-/* ---- living space backdrop ---- */
-.obs-backdrop {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-.obs-nebula {
-  position: absolute;
-  inset: -20%;
-  background:
-    radial-gradient(50% 40% at 20% 20%, rgba(124, 58, 237, 0.2), transparent 60%),
-    radial-gradient(45% 45% at 85% 75%, rgba(34, 211, 238, 0.12), transparent 60%);
-  filter: blur(80px);
-}
-.obs-stars {
-  position: absolute;
-  inset: -20%;
-  background-image:
-    radial-gradient(1px 1px at 20% 30%, #fff, transparent),
-    radial-gradient(1px 1px at 70% 60%, #cbd5e1, transparent),
-    radial-gradient(1px 1px at 40% 80%, #fff, transparent),
-    radial-gradient(1px 1px at 90% 20%, #a5b4fc, transparent),
-    radial-gradient(1px 1px at 55% 45%, #fff, transparent);
-  background-repeat: repeat;
-}
-.obs-planet-drift {
-  position: absolute;
-}
-
-/* ---- edge fade: blends the space backdrop into the page background so the
-   nebula/stars don't get cut off hard at the section's top/bottom seams ---- */
-.obs-edge-fade {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      to bottom,
-      var(--obs-bg, #050816) 0%,
-      rgba(5, 8, 22, 0) 9%,
-      rgba(5, 8, 22, 0) 91%,
-      var(--obs-bg, #050816) 100%
-    );
-}
-
-/* ---- fluid-glass scanner ---- */
+/* ---- mission cards (holographic glass) ---- */
 .obs-lens {
   position: absolute;
   inset: 0;
@@ -341,32 +294,6 @@
   opacity: 1;
 }
 
-/* ---- shooting star ---- */
-.obs-shooting-star {
-  position: absolute;
-  top: 8%;
-  left: -10%;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 6px 2px #fff;
-  animation: obs-shoot 1.1s ease-out forwards;
-}
-@keyframes obs-shoot {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(80vw, 40vh) scale(0.4);
-    opacity: 0;
-  }
-}
-
 /* ---- morse radar ---- */
 .obs-radar {
   position: absolute;
@@ -433,7 +360,6 @@
   .obs-sat-blink,
   .obs-station,
   .obs-astronaut,
-  .obs-shooting-star,
   .obs-wormhole,
   .obs-wormhole-ring,
   .obs-wormhole-core,

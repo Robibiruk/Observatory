@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Contact form</title>
+  </head>
+  <body>
+    <!--
+      Netlify Forms detection stub.
+      This file is never shown to visitors — it exists so Netlify's build-time
+      crawler can register the "contact" form (name + fields + honeypot). The
+      live form lives in src/sections/Contact.tsx and posts to "/" at runtime.
+    -->
+    <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <textarea name="message"></textarea>
+      <input type="text" name="bot-field" />
+    </form>
+  </body>
+</html>

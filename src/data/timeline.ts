@@ -47,21 +47,18 @@ export const timeline: TimelineMilestone[] = [
     links: { repo: undefined, live: undefined },
   },
   {
-    id: "eventhub",
+    id: "medreminder",
     mission: "004",
     chapter: "Saturn",
     chapterLabel: "Backend Rings",
     year: "2024",
-    title: "Launched EventHub",
+    title: "Built MedReminder",
     detail:
-      "Built and deployed EventHub — an Ethiopian event ticketing platform with Chapa payments.",
-    stack: ["React", "Express", "MongoDB", "Chapa"],
+      "Built MedReminder — a medication reminder app to keep patients on track with their doses, developed while enrolled in the PLP hackathon.",
+    stack: ["React", "Express", "MongoDB", "Node"],
     badge: "Live Mission",
     status: "live",
-    links: {
-      repo: "https://github.com/Robibiruk/Event-Hub",
-      live: "https://eventhub-et.vercel.app",
-    },
+    links: { repo: undefined, live: undefined },
   },
   {
     id: "nira",
