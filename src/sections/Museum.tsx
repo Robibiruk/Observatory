@@ -4,6 +4,29 @@ import { museumProjects } from "../data/projects";
 import type { Project, ProjectStatus } from "../data/types";
 import { Section } from "../components/Section";
 
+type GalleryMode = "mobile" | "tablet" | "desktop";
+
+/** Responsive mode. Initialised from the viewport so the first paint is
+ *  already correct (no desktop-marquee flash on phones). */
+function useGalleryMode(): GalleryMode {
+  const [mode, setMode] = useState<GalleryMode>(() => {
+    if (typeof window === "undefined") return "desktop";
+    const w = window.innerWidth;
+    if (w <= 639) return "mobile";
+    if (w <= 1023) return "tablet";
+    return "desktop";
+  });
+  useEffect(() => {
+    const compute = () => {
+      const w = window.innerWidth;
+      setMode(w <= 639 ? "mobile" : w <= 1023 ? "tablet" : "desktop");
+    };
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
+  return mode;
+}
+
 const STATUS_LABEL: Record<ProjectStatus, string> = {
   live: "Live",
   "in-progress": "In progress",
@@ -17,13 +40,7 @@ const STATUS_DOT: Record<ProjectStatus, string> = {
 };
 
 /** Modal with the project's full description, built from the data model. */
-function ProjectModal({
-  project,
-  onClose,
-}: {
-  project: Project;
-  onClose: () => void;
-}) {
+function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -77,9 +94,7 @@ function ProjectModal({
                 {STATUS_LABEL[project.status]}
               </span>
             </div>
-            <h3 className="mt-1 font-display text-2xl font-bold text-text">
-              {project.title}
-            </h3>
+            <h3 className="mt-1 font-display text-2xl font-bold text-text">{project.title}</h3>
           </div>
           <button
             aria-label="Close"
@@ -108,9 +123,7 @@ function ProjectModal({
             <h4 className="font-display text-sm font-semibold uppercase tracking-wide text-primary">
               Architecture
             </h4>
-            <p className="mt-2 text-sm leading-relaxed text-muted">
-              {project.architecture}
-            </p>
+            <p className="mt-2 text-sm leading-relaxed text-muted">{project.architecture}</p>
           </div>
         )}
 
@@ -122,10 +135,7 @@ function ProjectModal({
             <ul className="mt-2 space-y-1.5">
               {project.features.map((f) => (
                 <li key={f} className="flex gap-2 text-sm text-muted">
-                  <Sparkles
-                    size={14}
-                    className="mt-1 shrink-0 text-accent"
-                  />
+                  <Sparkles size={14} className="mt-1 shrink-0 text-accent" />
                   {f}
                 </li>
               ))}
@@ -138,9 +148,7 @@ function ProjectModal({
             <h4 className="font-display text-sm font-semibold uppercase tracking-wide text-primary">
               Lessons
             </h4>
-            <p className="mt-2 text-sm leading-relaxed text-muted">
-              {project.lessons}
-            </p>
+            <p className="mt-2 text-sm leading-relaxed text-muted">{project.lessons}</p>
           </div>
         )}
 
@@ -174,36 +182,78 @@ function ProjectModal({
   );
 }
 
+/** Shared inner card content (image + title + links). */
+function CardBody({ p }: { p: Project }) {
+  return (
+    <>
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <img
+          src={p.image}
+          alt={p.alt}
+          loading="lazy"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.visibility = "hidden";
+          }}
+          className="h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
+      </div>
+      <div className="p-5">
+        <h3 className="font-display text-lg font-bold text-text">{p.title}</h3>
+        <p className="mt-1 text-sm text-muted">{p.oneLiner}</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          {p.links.live && (
+            <span className="inline-flex items-center gap-1 text-sm text-highlight">
+              <ExternalLink size={14} /> View Live
+            </span>
+          )}
+          {p.links.repo && (
+            <span className="inline-flex items-center gap-1 text-sm text-muted">
+              <Github size={14} /> GitHub
+            </span>
+          )}
+          {!p.links.live && !p.links.repo && (
+            <span className="text-xs text-muted/70">In development</span>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
 /**
- * Museum — a moving marquee of projects (real apps + extras).
+ * The Gallery — a curated collection of projects.
  *
- * The strip scrolls continuously via a requestAnimationFrame loop (not the CSS
- * keyframe) so we can react to the cursor in real time:
- *   - cursor far LEFT  → speeds up (boost factor ramps with distance)
- *   - cursor far RIGHT → reverses direction (scrolls right instead of left)
- *   - otherwise        → base speed, leftward
- * It pauses only while a detail modal is open (so the user can read it).
- * Reduced-motion users get a static, swipeable row (no auto-animation);
- * clicking a card still opens the modal.
+ * Three responsive presentations, all reduced-motion safe:
+ *  - Desktop (>=1024px): cursor-driven drifting marquee (hover left = faster,
+ *    right = reverse). Keep as-is.
+ *  - Tablet (640-1023px): horizontal snap carousel showing ~3 cards.
+ *  - Mobile (<=639px): one large glass card at a time, swipeable. Neighbours
+ *    peek in, the centred card tilts 2-3deg, cards softly float, a sheen
+ *    drifts across the glass, and the star layer parallaxes. Pagination dots.
  */
 export function Museum({ glow = false }: { glow?: boolean }) {
   const [active, setActive] = useState<Project | null>(null);
+  const mode = useGalleryMode();
+  const isDesktop = mode === "desktop";
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const trackRef = useRef<HTMLDivElement>(null);
+  const starLayerRef = useRef<HTMLDivElement>(null);
   // -1 = scrolling left (default), +1 = scrolling right.
   const direction = useRef(-1);
   // Scroll position persists across modal open/close so the cycle never resets.
   const offsetRef = useRef(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    if (reduced) return;
+    // Desktop marquee loop — skipped on tablet/mobile (native scroll instead).
+    if (reduced || !isDesktop) return;
     const track = trackRef.current;
     if (!track) return;
 
-    // The track holds TWO copies of the list; loop when we pass one copy's width.
     const halfWidth = () => track.scrollWidth / 2;
     let last = performance.now();
     let raf = 0;
@@ -226,14 +276,13 @@ export function Museum({ glow = false }: { glow?: boolean }) {
       const dt = Math.min(now - last, 50); // clamp on tab refocus
       last = now;
       if (!active) {
-        // far-right → reverse; far-left → boost (leftward) fast
         let speed = BASE;
         if (mouseX >= 0) {
           const rel = (mouseX - rect.left) / rect.width; // 0 left .. 1 right
           if (rel > 0.75) {
             direction.current = 1; // far right → go right
           } else if (rel < 0.25) {
-            const t = 1 - rel / 0.25; // 0..1 as we approach far left
+            const t = 1 - rel / 0.25;
             speed = BASE + BOOST * t;
           } else {
             direction.current = -1; // middle → normal leftward
@@ -254,80 +303,166 @@ export function Museum({ glow = false }: { glow?: boolean }) {
       track.removeEventListener("mousemove", onMove);
       track.removeEventListener("mouseleave", onLeave);
     };
-  }, [reduced, active]);
+  }, [reduced, isDesktop, active]);
 
-  // Duplicate the list so the marquee loops seamlessly.
-  const track = [...museumProjects, ...museumProjects];
+  // Tablet/mobile: track scroll → active index, parallax stars, per-card tilt.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || isDesktop) return;
+
+    const onScroll = () => {
+      const cards = Array.from(
+        track.querySelectorAll<HTMLElement>("[data-gallery-card]")
+      );
+      const mid = track.getBoundingClientRect().left + track.clientWidth / 2;
+      let best = 0;
+      let bestDist = Infinity;
+      cards.forEach((card, idx) => {
+        const r = card.getBoundingClientRect();
+        const d = Math.abs(r.left + r.width / 2 - mid);
+        if (d < bestDist) {
+          bestDist = d;
+          best = idx;
+        }
+      });
+      const count = museumProjects.length;
+      setActiveIndex(((best % count) + count) % count);
+
+      if (starLayerRef.current) {
+        starLayerRef.current.style.transform = `translateX(${-track.scrollLeft * 0.15}px)`;
+      }
+
+      if (!reduced) {
+        cards.forEach((card) => {
+          const r = card.getBoundingClientRect();
+          const center = r.left + r.width / 2;
+          const dist = (center - mid) / window.innerWidth; // -0.5..0.5 across screen
+          const rot = Math.max(-3, Math.min(3, dist * -6)); // 2-3deg tilt
+          card.style.transform = `rotate(${rot}deg)`;
+        });
+      }
+    };
+
+    track.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => track.removeEventListener("scroll", onScroll);
+  }, [isDesktop, reduced, mode]);
+
+  const goTo = (i: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const card = track.querySelectorAll<HTMLElement>("[data-gallery-card]")[i];
+    if (card) {
+      card.scrollIntoView({
+        behavior: reduced ? "auto" : "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  };
+
+  // Desktop duplicates the list for a seamless loop; tablet/mobile use it once.
+  const items = isDesktop ? [...museumProjects, ...museumProjects] : museumProjects;
+
+  const itemWidthClass =
+    mode === "mobile" ? "w-screen shrink-0 snap-center" : "w-screen shrink-0 snap-center";
 
   return (
     <Section id="museum" className="section-pad" glow={glow}>
       <div className="mx-auto max-w-6xl">
-        <p className="eyebrow mb-3">Museum</p>
+        <p className="eyebrow mb-3">The Gallery</p>
         <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">
-          On display
+          Every project is a world
         </h2>
         <p className="mt-4 max-w-2xl text-muted">
-          A drifting reel of everything — move to the far left to speed it up,
-          the far right to send it back. Click a card to open its story.
+          {isDesktop
+            ? "Explored, solved, and carried forward — move to the far left to speed the reel up, the far right to send it back. Click a card to open its story."
+            : "Explored, solved, and carried forward — swipe through the collection. Tap a card to open its story."}
         </p>
       </div>
 
-      <div className="relative mt-12 overflow-hidden" role="group" aria-label="Project marquee">
-        {/* edge fades */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background to-transparent" />
+      <div className="relative mt-12 overflow-hidden" role={isDesktop ? "group" : undefined} aria-label="Project gallery">
+        {/* drifting star layer — parallaxes with swipe on tablet/mobile */}
+        {!isDesktop && (
+          <div
+            ref={starLayerRef}
+            aria-hidden="true"
+            className="gallery-stars pointer-events-none absolute inset-x-[-20%] inset-y-0 z-0"
+          />
+        )}
+
+        {/* edge fades — desktop marquee only */}
+        {isDesktop && (
+          <>
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background to-transparent" />
+          </>
+        )}
 
         <div
           ref={trackRef}
-          className={`flex w-max ${
-            reduced ? "overflow-x-auto px-6" : "px-3 will-change-transform"
-          }`}
+          className={
+            isDesktop
+              ? `relative z-[1] flex w-max ${
+                  reduced ? "overflow-x-auto px-6" : "px-3 will-change-transform"
+                }`
+              : "-mx-6 relative z-[1] flex w-full snap-x snap-mandatory overflow-x-auto px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          }
         >
-          {track.map((p, i) => (
-            <button
-              key={`${p.slug}-${i}`}
-              type="button"
-              onClick={() => setActive(p)}
-              className="group relative mr-6 w-[300px] shrink-0 overflow-hidden rounded-3xl border border-white/10 bg-surface text-left transition-all hover:border-accent/50 hover:shadow-glow-accent focus-visible:border-accent focus-visible:outline-none sm:w-[360px]"
-            >
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <img
-                  src={p.image}
-                  alt={p.alt}
-                  loading="lazy"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).style.visibility =
-                      "hidden";
-                  }}
-                  className="h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
-              </div>
-              <div className="p-5">
-                <h3 className="font-display text-lg font-bold text-text">
-                  {p.title}
-                </h3>
-                <p className="mt-1 text-sm text-muted">{p.oneLiner}</p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  {p.links.live && (
-                    <span className="inline-flex items-center gap-1 text-sm text-highlight">
-                      <ExternalLink size={14} /> View Live
-                    </span>
-                  )}
-                  {p.links.repo && (
-                    <span className="inline-flex items-center gap-1 text-sm text-muted">
-                      <Github size={14} /> GitHub
-                    </span>
-                  )}
-                  {!p.links.live && !p.links.repo && (
-                    <span className="text-xs text-muted/70">In development</span>
-                  )}
+          {items.map((p, i) =>
+            isDesktop ? (
+              <button
+                key={`${p.slug}-${i}`}
+                type="button"
+                onClick={() => setActive(p)}
+                className="group relative mr-6 w-[300px] shrink-0 overflow-hidden rounded-3xl border border-white/10 bg-surface text-left transition-all hover:border-accent/50 hover:shadow-glow-accent focus-visible:border-accent focus-visible:outline-none sm:w-[360px]"
+              >
+                <CardBody p={p} />
+              </button>
+            ) : (
+              <div
+                key={`${p.slug}-${i}`}
+                className={`${itemWidthClass} relative z-[1] flex justify-center px-3`}
+              >
+                <div
+                  data-gallery-card
+                  className={`gallery-card-float gallery-sheen group relative overflow-hidden rounded-3xl border border-white/10 bg-surface text-left transition-all hover:border-accent/50 focus-visible:border-accent focus-visible:outline-none ${
+                    mode === "mobile" ? "w-[86%]" : "w-[88%] max-w-sm"
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setActive(p)}
+                    className="block w-full text-left focus-visible:outline-none"
+                  >
+                    <CardBody p={p} />
+                  </button>
                 </div>
               </div>
-            </button>
-          ))}
+            )
+          )}
         </div>
       </div>
+
+      {/* pagination dots — tablet + mobile */}
+      {!isDesktop && (
+        <div className="mt-6 flex items-center justify-center gap-2">
+          {museumProjects.map((p, i) => (
+            <button
+              key={p.slug}
+              type="button"
+              aria-label={`Go to ${p.title}`}
+              aria-current={i === activeIndex}
+              onClick={() => goTo(i)}
+              className={`h-2 rounded-full transition-all ${
+                i === activeIndex
+                  ? "w-6 bg-primary"
+                  : "w-2 bg-white/25 hover:bg-white/40"
+              }`}
+            />
+          ))}
+        </div>
+      )}
 
       {active && <ProjectModal project={active} onClose={() => setActive(null)} />}
     </Section>

@@ -11,7 +11,7 @@ const NAV = [
   { id: "projects", label: "Projects" },
   { id: "timeline", label: "Time Machine" },
   { id: "constellation", label: "Stack" },
-  { id: "museum", label: "Museum" },
+  { id: "museum", label: "Gallery" },
   { id: "contact", label: "Contact" },
 ];
 
