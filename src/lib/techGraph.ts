@@ -31,11 +31,10 @@ const TECH_ICON: Record<string, string> = {
   MongoDB: "/devicons/mongodb.svg",
   "Three.js": "/devicons/threejs.svg",
   GSAP: "/devicons/gsap.svg",
-  // Recharts: "/devicons/recharts.svg",
+  Recharts: "/devicons/recharts.svg",
   "OpenRouter": "/devicons/openrouter.svg",
   "React Query": "/devicons/reactquery.svg",
   JWT: "/devicons/jwt.svg",
-  Chapa: "/devicons/chapa.svg",
   TypeScript: "/devicons/typescript.svg",
   Zustand: "/devicons/zustand.svg",
 };

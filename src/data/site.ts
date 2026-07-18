@@ -11,7 +11,7 @@ export const site: SiteConfig = {
     "I design and ship AI-first products that feel calm, useful, and human — from a desktop assistant that speaks with you, to ticketing and health platforms serving real communities.",
   currentlyBuilding: [
     "Nira AI — a local-first desktop assistant with voice, reasoning, and tool use",
-    "EventHub — Ethiopian-first event ticketing with Chapa payments",
+    "EventHub — Ethiopian event ticketing with payments",
   ],
   currentlyLearning: [
     "Applied LLM agents & tool-calling",

@@ -36,6 +36,14 @@ export type TimelineMilestone = {
   badge: string;
   status: TimelineStatus;
   links: { live?: string; repo?: string };
+  /** Optional certificate artifact: thumbnail opens a lightbox of the full
+      image; pdf (if present) links to a downloadable/verifiable copy. */
+  certificate?: {
+    image: string;
+    pdf?: string;
+    alt: string;
+    caption?: string;
+  };
 };
 
 export type SocialLink = {

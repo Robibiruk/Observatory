@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ExternalLink, Github, Sparkles, Rocket } from "lucide-react";
+import { ExternalLink, Github, Sparkles, Rocket, X } from "lucide-react";
 import { timeline } from "../data/timeline";
 import { site } from "../data/site";
 import type { TimelineMilestone, TimelineStatus } from "../data/types";
@@ -117,6 +117,7 @@ function MissionCard({
   active: boolean;
   isFinale: boolean;
 }) {
+  const [showCert, setShowCert] = useState(false);
   if (isFinale) {
     // Wormhole finale
     return (
@@ -141,10 +142,11 @@ function MissionCard({
     );
   }
   return (
-    <article
-      className={`obs-card group relative w-full ${active ? "is-active" : ""}`}
-      data-index={index}
-    >
+    <>
+      <article
+        className={`obs-card group relative w-full ${active ? "is-active" : ""}`}
+        data-index={index}
+      >
       {/* milestone star — the mission IS the star */}
       <span className={`obs-node ${m.status === "future" ? "" : "obs-node-on"} ${active ? "obs-node-active" : ""}`}>
         {m.status === "future" ? "✧" : "✦"}
@@ -154,8 +156,8 @@ function MissionCard({
           className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-3xl transition-opacity duration-500"
           style={{ background: paletteOf(m.chapter).glow, opacity: active ? 0.6 : 0.25 }}
         />
-        <div className="flex items-start justify-between gap-3">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
             <div className="font-mono text-[10px] uppercase tracking-widest text-primary/70">
               Mission {String(index + 1).padStart(3, "0")}
             </div>
@@ -197,11 +199,79 @@ function MissionCard({
             )}
           </div>
         )}
+
+        {m.certificate && (
+          <div className="mt-5">
+            <button
+              type="button"
+              onClick={() => setShowCert(true)}
+              className="group block w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-left transition hover:border-accent/50 focus-visible:border-accent focus-visible:outline-none"
+            >
+              <div className="relative aspect-video overflow-hidden">
+                <img
+                  src={m.certificate.image}
+                  alt={m.certificate.alt}
+                  loading="lazy"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.visibility =
+                      "hidden";
+                  }}
+                  className="h-full w-full object-contain opacity-90 transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+              </div>
+              <div className="flex items-center justify-between gap-2 px-3 py-2">
+                <span className="font-mono text-[11px] text-highlight">
+                  {m.certificate.caption ?? "Certificate"}
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-wide text-muted">
+                  View
+                </span>
+              </div>
+            </button>
+            {m.certificate.pdf && (
+              <a
+                href={m.certificate.pdf}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1.5 text-xs text-accent transition hover:underline"
+              >
+                <ExternalLink size={13} /> Verify / Download PDF
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </article>
+
+    {m.certificate && showCert && (
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={m.certificate.alt}
+        onClick={() => setShowCert(false)}
+        className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+      >
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={() => setShowCert(false)}
+          className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-text transition hover:bg-white/20"
+        >
+          <X size={20} />
+        </button>
+        <img
+          src={m.certificate.image}
+          alt={m.certificate.alt}
+          onClick={(e) => e.stopPropagation()}
+          className="max-h-[85vh] max-w-full rounded-2xl border border-white/10 object-contain shadow-2xl"
+        />
+      </div>
+    )}
+
+      </>
+
   );
 }
-
 /* ------------------------------------------------------------------ */
 /* Main orchestrator                                                  */
 /* ------------------------------------------------------------------ */

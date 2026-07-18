@@ -4,7 +4,8 @@ import {
   Mail,
   Instagram,
   Music2,
-  // Pinterest has no dedicated lucide icon; map to a sensible fallback.
+  Image,
+  // lucide ships no brand icons for TikTok/Pinterest; use distinct fallbacks.
   type LucideIcon,
 } from "lucide-react";
 import type { SocialLink } from "../data/types";
@@ -14,8 +15,8 @@ const ICONS: Record<SocialLink["icon"], LucideIcon> = {
   linkedin: Linkedin,
   mail: Mail,
   instagram: Instagram,
-  tiktok: Music2,
-  pinterest: Music2, // fallback placeholder; swap if a better icon is desired
+  tiktok: Music2, // music note — recognizable stand-in for TikTok
+  pinterest: Image, // pinboard/visual — distinct from the TikTok note
 };
 
 export function Socials({

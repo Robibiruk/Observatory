@@ -84,7 +84,7 @@
 }
 .obs-card:hover .obs-card-glass,
 .obs-card.is-active .obs-card-glass {
-  transform: translateY(-10px) rotateX(4deg) rotateZ(-1deg) scale(1.02);
+  transform: translateY(-10px);
   border-color: rgba(141, 91, 255, 0.5);
   box-shadow: 0 24px 60px -20px rgba(141, 91, 255, 0.45);
   background: rgba(14, 18, 38, 0.9);

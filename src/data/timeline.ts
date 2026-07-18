@@ -45,6 +45,12 @@ export const timeline: TimelineMilestone[] = [
     badge: "Certified",
     status: "complete",
     links: { repo: undefined, live: undefined },
+    certificate: {
+      image: "/certificates/plp-mern.webp",
+      pdf: "/certificates/plp-mern.pdf",
+      alt: "PLP MERN Fullstack Development certificate",
+      caption: "PLP MERN Fullstack Development",
+    },
   },
   {
     id: "medreminder",
@@ -66,7 +72,7 @@ export const timeline: TimelineMilestone[] = [
     chapter: "Nebula",
     chapterLabel: "AI Ignition",
     year: "2025",
-    title: "Building Nira AI",
+    title: "Built Nira AI ",
     detail:
       "Started Nira AI, a local-first desktop assistant with voice, reasoning, and tools.",
     stack: ["React", "Three.js", "FastAPI", "OpenRouter"],

@@ -16,7 +16,7 @@ export const projects: Project[] = [
     title: "Nira AI",
     oneLiner:
       "A local-first desktop AI assistant — voice, reasoning, and tool use with a calm glass UI.",
-    status: "in-progress",
+    status: "live",
     stack: ["React", "Vite", "Firebase", "Three.js", "GSAP", "Framer Motion"],
     featured: true,
     image: "/projects/nira.png",
@@ -78,7 +78,7 @@ export const projects: Project[] = [
     slug: "eventhub",
     title: "EventHub",
     oneLiner:
-      "Two-sided event ticketing SaaS for Ethiopia — discovery, checkout, and Chapa payments.",
+      "Two-sided event ticketing SaaS for Ethiopia — discovery and checkout.",
     status: "prototype", // corrected: EventHub is the prototype
     stack: [
       "React",
@@ -89,23 +89,18 @@ export const projects: Project[] = [
       "React Query",
       "Express",
       "MongoDB",
-      "JWT",
-      "Chapa",
+      "JWT"
     ],
     featured: false, // not featured: keeps MedReminder as the 2nd bento tile
     image: "/projects/eventhub.png",
     alt: "EventHub event listing and checkout screen with Ethiopian events",
-    links: {
-      // live: prototype — no live deployment yet
-      repo: "https://github.com/Robibiruk/Event-Hub",
-    },
+    links: {},  // in development
     overview:
-      "EventHub is an event marketplace connecting organizers and attendees. Organizers publish events and issue QR tickets; attendees discover Ethiopian events, buy with Chapa, and get QR-coded passes. The backend is a typed Express + MongoDB API with auth, rate limiting, and validation.",
+      "EventHub is an event marketplace connecting organizers and attendees. Organizers publish events and issue QR tickets; attendees discover Ethiopian events and get QR-coded passes. The backend is a typed Express + MongoDB API with auth, rate limiting, and validation.",
     architecture:
-      "Monorepo: Express + Mongoose API (JWT auth, Zod validation, Helmet, rate limiting, QR ticket generation) talking to a React/TypeScript/Vite client using Zustand for cart/UI state and React Query for server cache. Payments via Chapa; tickets rendered as scannable QR codes.",
+      "Monorepo: Express + Mongoose API (JWT auth, Zod validation, Helmet, rate limiting, QR ticket generation) talking to a React/TypeScript/Vite client using Zustand for cart/UI state and React Query for server cache. tickets rendered as scannable QR codes.",
     features: [
       "Organizer dashboards + attendee-facing discovery",
-      "Chapa payment integration with QR tickets",
       "Typed end-to-end (Zod on server, TS on client)",
       "Secure-by-default API (Helmet, rate-limit, JWT)",
     ],
@@ -126,12 +121,14 @@ export const museumExtras: Project[] = [
     title: "Menstrual / Period Tracking App",
     oneLiner:
       "A calm, ad-free cycle and pregnancy tracking app — emoji UI, RTL support, no clutter.",
-    status: "in-progress", // "on development"
+    status: "live",
     stack: ["React", "Vite", "TypeScript", "Tailwind", "Express", "MongoDB"],
     featured: false,
     image: "/projects/menstrual.jpg",
     alt: "Menstrual and period tracking app home screen with cycle overview",
-    links: {}, // in development — links to be added
+    links: {
+      live: "https://atnasya-health.netlify.app/",
+      repo: "https://github.com/Robibiruk/atnasya-health-frontend",},
     overview:
       "A period and cycle tracking app focused on a friendly, ad-free experience. Built with an emoji-driven UI, right-to-left language support, and a clean information architecture that keeps the user's data first.",
     architecture:
