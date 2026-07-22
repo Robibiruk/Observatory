@@ -79,7 +79,7 @@ export const timeline: TimelineMilestone[] = [
     badge: "In Flight",
     status: "live",
     links: {
-      repo: "https://github.com/Robibiruk/Nira",
+      repo: "https://github.com/Robibiruk/Nira-AI-Assistant",
       live: "https://nira-ai-assistant.vercel.app",
     },
   },

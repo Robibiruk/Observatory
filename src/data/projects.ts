@@ -23,7 +23,7 @@ export const projects: Project[] = [
     alt: "Nira AI desktop assistant interface with chat and voice controls",
     links: {
       live: "https://nira-ai-assistant.vercel.app",
-      repo: "https://github.com/Robibiruk/Nira",
+      repo: "https://github.com/Robibiruk/Nira-AI-Assistant",
     },
     overview:
       "Nira is a desktop AI assistant built for natural, low-friction interaction. It speaks with a male British voice (Web Speech API), streams reasoning, and can run browser and local tools through a pluggable backend. The UI is a glassy, motion-rich workspace designed to stay out of the way.",
@@ -151,7 +151,7 @@ export const museumExtras: Project[] = [
     image: "/projects/clean-city.png",
     alt: "Clean City report and restore dashboard with city initiative maps",
     links: {
-      live: "https://clean-city-l9tfceiqg-robels-projects-a70f5979.vercel.app/",
+      live: "https://clean-city-report.vercel.app/",
       repo: "https://github.com/Robibiruk/clean-city",
     },
     overview:
