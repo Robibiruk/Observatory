@@ -438,10 +438,10 @@ export function Museum({ glow = false }: { glow?: boolean }) {
             >
               <ChevronLeft size={18} />
             </button>
-            <div className="flex items-center gap-2 text-[11px] font-mono tracking-wider text-muted/60">
-              <span className={direction.current === -1 ? "text-primary" : ""}>&lt;</span>
-              <span className="min-w-[28px] text-center text-primary">{speedLabel}</span>
-              <span className={direction.current === 1 ? "text-primary" : ""}>&gt;</span>
+            <div className="flex items-center gap-2 text-[11px] font-mono tracking-wider text-muted/60 opacity-0 pointer-events-none">
+              <span>&lt;</span>
+              <span className="min-w-[28px] text-center">{speedLabel}</span>
+              <span>&gt;</span>
             </div>
             <button
               onClick={() => nudge(1)}
