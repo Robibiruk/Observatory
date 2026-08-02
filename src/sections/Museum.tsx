@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { ExternalLink, Github, Sparkles, X } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { ExternalLink, Github, Sparkles, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { museumProjects } from "../data/projects";
 import type { Project, ProjectStatus } from "../data/types";
 import { Section } from "../components/Section";
@@ -248,6 +248,35 @@ export function Museum({ glow = false }: { glow?: boolean }) {
   const offsetRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  // Directional button controls: each click sets direction and multiplies speed.
+  const speedMultiplier = useRef(1);
+  const [speedLabel, setSpeedLabel] = useState("1x");
+  const MAX_SPEED = 8;
+
+  const nudge = useCallback((dir: -1 | 1) => {
+    if (direction.current !== dir) {
+      // Switching direction — reset speed, set new direction
+      direction.current = dir;
+      speedMultiplier.current = 1;
+    } else {
+      // Same direction — accelerate
+      speedMultiplier.current = Math.min(speedMultiplier.current * 1.6, MAX_SPEED);
+    }
+    setSpeedLabel(`${speedMultiplier.current.toFixed(1)}x`);
+  }, []);
+
+  // Decay speed back toward 1x over time (2 seconds of no clicks)
+  useEffect(() => {
+    if (!isDesktop || reduced) return;
+    const iv = setInterval(() => {
+      if (speedMultiplier.current > 1) {
+        speedMultiplier.current = Math.max(1, speedMultiplier.current * 0.92);
+        setSpeedLabel(`${speedMultiplier.current.toFixed(1)}x`);
+      }
+    }, 80);
+    return () => clearInterval(iv);
+  }, [isDesktop, reduced]);
+
   useEffect(() => {
     // Desktop marquee loop — skipped on tablet/mobile (native scroll instead).
     if (reduced || !isDesktop) return;
@@ -276,14 +305,14 @@ export function Museum({ glow = false }: { glow?: boolean }) {
       const dt = Math.min(now - last, 50); // clamp on tab refocus
       last = now;
       if (!active) {
-        let speed = BASE;
+        let speed = BASE * speedMultiplier.current;
         if (mouseX >= 0) {
           const rel = (mouseX - rect.left) / rect.width; // 0 left .. 1 right
           if (rel > 0.75) {
             direction.current = 1; // far right → go right
           } else if (rel < 0.25) {
             const t = 1 - rel / 0.25;
-            speed = BASE + BOOST * t;
+            speed = (BASE + BOOST * t) * speedMultiplier.current;
           } else {
             direction.current = -1; // middle → normal leftward
           }
@@ -397,6 +426,31 @@ export function Museum({ glow = false }: { glow?: boolean }) {
             <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent" />
             <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background to-transparent" />
           </>
+        )}
+
+        {/* directional speed buttons — desktop only */}
+        {isDesktop && !reduced && (
+          <div className="pointer-events-auto absolute inset-y-0 left-0 right-0 z-20 flex items-center justify-between px-2">
+            <button
+              onClick={() => nudge(-1)}
+              aria-label="Scroll left — click to speed up"
+              className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-surface/80 backdrop-blur-sm text-muted transition-all hover:border-primary/50 hover:text-text hover:shadow-glow"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <div className="flex items-center gap-2 text-[11px] font-mono tracking-wider text-muted/60">
+              <span className={direction.current === -1 ? "text-primary" : ""}>&lt;</span>
+              <span className="min-w-[28px] text-center text-primary">{speedLabel}</span>
+              <span className={direction.current === 1 ? "text-primary" : ""}>&gt;</span>
+            </div>
+            <button
+              onClick={() => nudge(1)}
+              aria-label="Scroll right — click to speed up"
+              className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-surface/80 backdrop-blur-sm text-muted transition-all hover:border-primary/50 hover:text-text hover:shadow-glow"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         )}
 
         <div
