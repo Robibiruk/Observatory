@@ -104,39 +104,6 @@ export const projects: Project[] = [
     lessons:
       "Letting users type reminders in plain language (vs rigid forms) dramatically lowered onboarding friction — the AI parsing step earned its place.",
   },
-  {
-    slug: "eventhub",
-    title: "EventHub",
-    oneLiner:
-      "Two-sided event ticketing SaaS for Ethiopia — discovery and checkout.",
-    status: "prototype", // corrected: EventHub is the prototype
-    stack: [
-      "React",
-      "TypeScript",
-      "Vite",
-      "Tailwind",
-      "Zustand",
-      "React Query",
-      "Express",
-      "MongoDB",
-      "JWT"
-    ],
-    featured: false, // not featured: keeps MedReminder as the 2nd bento tile
-    image: "/projects/eventhub.png",
-    alt: "EventHub event listing and checkout screen with Ethiopian events",
-    links: {},  // in development
-    overview:
-      "EventHub is an event marketplace connecting organizers and attendees. Organizers publish events and issue QR tickets; attendees discover Ethiopian events and get QR-coded passes. The backend is a typed Express + MongoDB API with auth, rate limiting, and validation.",
-    architecture:
-      "Monorepo: Express + Mongoose API (JWT auth, Zod validation, Helmet, rate limiting, QR ticket generation) talking to a React/TypeScript/Vite client using Zustand for cart/UI state and React Query for server cache. tickets rendered as scannable QR codes.",
-    features: [
-      "Organizer dashboards + attendee-facing discovery",
-      "Typed end-to-end (Zod on server, TS on client)",
-      "Secure-by-default API (Helmet, rate-limit, JWT)",
-    ],
-    lessons:
-      "Splitting client state (Zustand) from server cache (React Query) removed a whole class of stale-UI bugs versus a single global store.",
-  },
 ];
 
 // ----------------------------------------------------------------------------

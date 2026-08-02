@@ -84,8 +84,25 @@ export const timeline: TimelineMilestone[] = [
     },
   },
   {
-    id: "future",
+    id: "pulsewatch",
     mission: "006",
+    chapter: "Nebula",
+    chapterLabel: "AI Ignition",
+    year: "2026",
+    title: "Built PulseWatch",
+    detail:
+      "Full-stack uptime monitoring platform — Telegram alerts, AI-explained incidents, public status pages, and distributed worker claim-locking on free-tier infra.",
+    stack: ["React", "TypeScript", "FastAPI", "Python", "PostgreSQL", "Neon"],
+    badge: "Live Mission",
+    status: "live",
+    links: {
+      repo: "https://github.com/Robibiruk/PulseWatch",
+      live: "https://pulsewatch-monitor.vercel.app",
+    },
+  },
+  {
+    id: "future",
+    mission: "007",
     chapter: "Deep Space",
     chapterLabel: "Future Vision",
     year: "—",

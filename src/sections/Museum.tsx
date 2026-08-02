@@ -434,6 +434,7 @@ export function Museum({ glow = false }: { glow?: boolean }) {
             <button
               onClick={() => nudge(-1)}
               aria-label="Scroll left — click to speed up"
+              title="Click to scroll left — more clicks = more speed"
               className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-surface/80 backdrop-blur-sm text-muted transition-all hover:border-primary/50 hover:text-text hover:shadow-glow"
             >
               <ChevronLeft size={18} />
@@ -446,6 +447,7 @@ export function Museum({ glow = false }: { glow?: boolean }) {
             <button
               onClick={() => nudge(1)}
               aria-label="Scroll right — click to speed up"
+              title="Click to scroll right — more clicks = more speed"
               className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-surface/80 backdrop-blur-sm text-muted transition-all hover:border-primary/50 hover:text-text hover:shadow-glow"
             >
               <ChevronRight size={18} />
