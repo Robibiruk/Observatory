@@ -10,8 +10,8 @@ export const site: SiteConfig = {
   mission:
     "I design and ship AI-first products that feel calm, useful, and human — from a desktop assistant that speaks with you, to ticketing and health platforms serving real communities.",
   currentlyBuilding: [
+    "PulseWatch — self-hosted uptime monitoring with Telegram alerts and AI-explained incidents",
     "Nira AI — a local-first desktop assistant with voice, reasoning, and tool use",
-    "EventHub — Ethiopian event ticketing with payments",
   ],
   currentlyLearning: [
     "Applied LLM agents & tool-calling",

@@ -12,13 +12,43 @@ import type { Project } from "./types";
 
 export const projects: Project[] = [
   {
+    slug: "pulsewatch",
+    title: "PulseWatch",
+    oneLiner:
+      "Self-hosted uptime monitoring platform with Telegram alerts and AI-explained incidents.",
+    status: "live",
+    stack: ["React", "TypeScript", "FastAPI", "Python", "PostgreSQL", "Vite", "Neon"],
+    featured: true,
+    image: "/projects/pulsewatch-dashboard.png",
+    alt: "PulseWatch dashboard showing real-time monitor fleet with KPI cards and status pills",
+    links: {
+      live: "https://pulsewatch-monitor.vercel.app",
+      repo: "https://github.com/Robibiruk/PulseWatch",
+    },
+    overview:
+      "PulseWatch is a full-stack monitoring platform for developers who want to know when their services break — before users notice. It probes endpoints every minute, tracks uptime history, opens incidents automatically on repeated failures, sends alerts to Telegram / Email / Discord / Slack / Webhooks, and provides a public status page. AI-powered incident explanations (via OpenRouter) tell you why something broke in plain English.",
+    architecture:
+      "FastAPI (Python) async backend with SQLAlchemy 2.0 ORM, worker scheduler with distributed claim-locking (SELECT FOR UPDATE SKIP LOCKED), and a long-polling Telegram bot — all against Neon Postgres. React + Vite + TypeScript SPA on the frontend with JWT auth. Deployed across Render (API), Vercel (frontend + docs), and GitHub Actions (always-on monitoring cron).",
+    features: [
+      "HTTP/HTTPS + heartbeat (push) monitors with configurable intervals",
+      "Anti-false-alarm state machine — 3 consecutive failures before alerting",
+      "Multi-channel alerts: Telegram, Email (Resend), Discord, Slack, webhooks",
+      "AI incident explanations via OpenRouter (GPT-OSS-20b:free)",
+      "Public status pages with 3 themes (neon / light / minimal)",
+      "Distributed worker claim-locking — safe for 2+ replicas",
+      "GitHub Actions cron for always-on monitoring on free tier",
+    ],
+    lessons:
+      "The distributed claim-locking pattern (SKIP LOCKED + lease) made it possible to run the monitoring engine for free across Render's sleeping API + GitHub Actions cron — no paid worker service needed.",
+  },
+  {
     slug: "nira-ai",
     title: "Nira AI",
     oneLiner:
       "A local-first desktop AI assistant — voice, reasoning, and tool use with a calm glass UI.",
     status: "live",
     stack: ["React", "Vite", "Firebase", "Three.js", "GSAP", "Framer Motion"],
-    featured: true,
+    featured: false,
     image: "/projects/nira.png",
     alt: "Nira AI desktop assistant interface with chat and voice controls",
     links: {
