@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { ExternalLink, Github, Sparkles, Rocket, X } from "lucide-react";
-import { timeline } from "../data/timeline";
 import { site } from "../data/site";
 import type { TimelineMilestone, TimelineStatus } from "../data/types";
 import { Section } from "../components/Section";
+import { useContent } from "../lib/store";
 import Planet from "../components/Planet";
 import RotatingEarth from "../components/RotatingEarth";
 import ElectricBorder from "../components/ElectricBorder";
@@ -53,8 +53,17 @@ const MORSE = [
 /* ------------------------------------------------------------------ */
 /* HUD — minimal mission-control telemetry (~10% opacity)            */
 /* ------------------------------------------------------------------ */
-function Hud({ activeIndex, progress }: { activeIndex: number; progress: number }) {
+function Hud({
+  activeIndex,
+  progress,
+  timeline,
+}: {
+  activeIndex: number;
+  progress: number;
+  timeline: TimelineMilestone[];
+}) {
   const m = timeline[activeIndex] ?? timeline[0];
+  if (!m) return null;
   const sector = `${String.fromCharCode(65 + (activeIndex % 6))}-${String(activeIndex + 1).padStart(2, "0")}`;
   const x = (472.2 - activeIndex * 7.3).toFixed(1);
   const y = (183.8 + activeIndex * 4.1).toFixed(1);
@@ -86,7 +95,15 @@ function Hud({ activeIndex, progress }: { activeIndex: number; progress: number 
 /* ------------------------------------------------------------------ */
 /* Left progress indicator                                           */
 /* ------------------------------------------------------------------ */
-function ProgressRail({ progress, activeIndex }: { progress: number; activeIndex: number }) {
+function ProgressRail({
+  progress,
+  activeIndex,
+  timeline,
+}: {
+  progress: number;
+  activeIndex: number;
+  timeline: TimelineMilestone[];
+}) {
   return (
     <div className="pointer-events-none sticky top-24 hidden h-fit w-40 flex-col items-start gap-2 font-mono text-[10px] uppercase tracking-widest text-primary/60 lg:flex">
       <div>Mission</div>
@@ -276,6 +293,7 @@ function MissionCard({
 /* Main orchestrator                                                  */
 /* ------------------------------------------------------------------ */
 export function TimeMachine({ glow = false }: { glow?: boolean }) {
+  const timeline = useContent().missions;
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -317,7 +335,9 @@ export function TimeMachine({ glow = false }: { glow?: boolean }) {
       const total = el.offsetHeight - window.innerHeight;
       const p = Math.min(1, Math.max(0, -rect.top / (total || 1)));
       setProgress(p);
-      setActiveIndex(Math.min(timeline.length - 1, Math.floor(p * timeline.length)));
+      setActiveIndex(
+        Math.min(timeline.length - 1, Math.floor(p * timeline.length))
+      );
       raf = 0;
     };
     const rafScroll = () => {
@@ -329,7 +349,7 @@ export function TimeMachine({ glow = false }: { glow?: boolean }) {
       window.removeEventListener("scroll", rafScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [timeline]);
 
   // escape key (dismiss achievement)
   useEffect(() => {
@@ -394,7 +414,9 @@ export function TimeMachine({ glow = false }: { glow?: boolean }) {
       )}
 
         {/* HUD overlays the whole section, above the border */}
-        {!reduced && <Hud activeIndex={activeIndex} progress={progress} />}
+        {!reduced && (
+          <Hud activeIndex={activeIndex} progress={progress} timeline={timeline} />
+        )}
 
         {/* Electric border wraps the ENTIRE timeline content: titles, mission
             cards, the spinning/current-chapter planet, and the closing
@@ -420,7 +442,11 @@ export function TimeMachine({ glow = false }: { glow?: boolean }) {
 
           {/* body: progress rail + constellation + planet */}
           <div className="relative mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-8 lg:grid-cols-[160px_1fr_220px]">
-            <ProgressRail progress={progress} activeIndex={activeIndex} />
+            <ProgressRail
+              progress={progress}
+              activeIndex={activeIndex}
+              timeline={timeline}
+            />
 
             {/* mission cards */}
             <div className="relative space-y-24 sm:space-y-28">

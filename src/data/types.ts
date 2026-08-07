@@ -1,6 +1,11 @@
 export type ProjectStatus = "live" | "in-progress" | "prototype";
 
+/** Which section a project appears in. `both` shows it everywhere. */
+export type ProjectPosition = "observatory" | "gallery" | "both";
+
 export type Project = {
+  /** DB id — set when loaded from the admin backend; absent in local data. */
+  id?: number;
   slug: string;
   title: string;
   oneLiner: string;
@@ -8,6 +13,7 @@ export type Project = {
   stack: string[];
   /** Controls large vs small bento tile. */
   featured: boolean;
+  position: ProjectPosition;
   image: string;
   alt: string;
   links: { live?: string; repo?: string };
@@ -16,12 +22,15 @@ export type Project = {
   architecture?: string;
   features?: string[];
   lessons?: string;
+  /** Position within the section's list (admin-managed). */
+  sortOrder?: number;
 };
 
 export type TimelineStatus = "complete" | "live" | "future";
 
 export type TimelineMilestone = {
-  id: string;
+  /** Local string ids ("start", "plp") or the numeric DB id once DB-backed. */
+  id: string | number;
   /** Mission number, e.g. "001" */
   mission: string;
   /** Planetary chapter the mission belongs to (e.g. "Earth", "Nebula"). */
@@ -44,6 +53,8 @@ export type TimelineMilestone = {
     alt: string;
     caption?: string;
   };
+  /** Position within the timeline (admin-managed). */
+  sortOrder?: number;
 };
 
 export type SocialLink = {

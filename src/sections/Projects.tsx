@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github, X, Sparkles } from "lucide-react";
-import { sortedProjects } from "../data/projects";
 import type { Project } from "../data/types";
 import { Section } from "../components/Section";
+import { useContent } from "../lib/store";
 
 const STATUS_LABEL: Record<Project["status"], string> = {
   live: "Live",
@@ -18,6 +18,7 @@ const STATUS_LABEL: Record<Project["status"], string> = {
  * cards are real buttons; the detail panel is focus-trapped-ish via autofocus.
  */
 export function Projects({ glow = false }: { glow?: boolean }) {
+  const { observatoryProjects: sortedProjects } = useContent();
   const [open, setOpen] = useState<Project | null>(null);
 
   // This site runs Lenis smooth-scroll, which installs a window-level wheel

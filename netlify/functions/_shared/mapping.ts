@@ -208,7 +208,7 @@ export function insertTech(s: Sql, t: TechWire) {
 }
 
 export function updateProject(s: Sql, p: ProjectWire) {
-  return s.unsafe(
+  return s.query(
     `UPDATE projects SET
        slug=$1, title=$2, one_liner=$3, status=$4, featured=$5, position=$6,
        image=$7, alt=$8, live_url=$9, repo_url=$10, overview=$11,
@@ -237,7 +237,7 @@ export function updateProject(s: Sql, p: ProjectWire) {
 }
 
 export function updateMission(s: Sql, m: MissionWire) {
-  return s.unsafe(
+  return s.query(
     `UPDATE missions SET
        mission=$1, chapter=$2, chapter_label=$3, year=$4, title=$5, detail=$6,
        badge=$7, status=$8, stack=$9, live_url=$10, repo_url=$11,
@@ -267,7 +267,7 @@ export function updateMission(s: Sql, m: MissionWire) {
 }
 
 export function updateTech(s: Sql, t: TechWire) {
-  return s.unsafe(
+  return s.query(
     `UPDATE tech SET name=$1, icon=$2, count=$3, project_slugs=$4, sort_order=$5
      WHERE id = $6`,
     [
@@ -282,24 +282,38 @@ export function updateTech(s: Sql, t: TechWire) {
 }
 
 export function deleteById(s: Sql, table: TableKey, id: number) {
-  return s.unsafe(`DELETE FROM ${TABLE[table]} WHERE id = $1`, [id]);
+  return s.query(`DELETE FROM ${TABLE[table]} WHERE id = $1`, [id]);
 }
 
+/**
+ * Reassigns sort_order for the whole table. The admin edits filtered views
+ * (e.g. only observatory projects), so provided ids keep their given order and
+ * every OTHER row keeps its existing relative order, appended afterwards. That
+ * way reordering one section never scrambles the others.
+ */
 export async function reorder(
   s: Sql,
   table: TableKey,
   orderedIds: number[]
 ) {
-  for (let i = 0; i < orderedIds.length; i++) {
-    await s.unsafe(`UPDATE ${TABLE[table]} SET sort_order = $1 WHERE id = $2`, [
+  const rows = (await s.query(
+    `SELECT id FROM ${TABLE[table]} ORDER BY sort_order ASC, id ASC`
+  )) as Row[];
+  const all = rows.map((r) => Number(r.id));
+  const given = new Set(orderedIds);
+  const rest = all.filter((id) => !given.has(id));
+  const next = [...orderedIds, ...rest];
+
+  for (let i = 0; i < next.length; i++) {
+    await s.query(`UPDATE ${TABLE[table]} SET sort_order = $1 WHERE id = $2`, [
       i,
-      orderedIds[i],
+      next[i],
     ]);
   }
 }
 
 export async function maxSortOrder(s: Sql, table: TableKey): Promise<number> {
-  const rows = await s.unsafe(
+  const rows = await s.query(
     `SELECT COALESCE(MAX(sort_order), -1) AS m FROM ${TABLE[table]}`
   );
   return Number((rows as Row[])[0]?.m ?? -1);

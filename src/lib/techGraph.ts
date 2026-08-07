@@ -1,27 +1,33 @@
-import { projects } from "../data/projects";
 import type { Project } from "../data/types";
 
-export type TechNode = {
+/** A technology node — admin-managed in the DB, or derived from projects. */
+export type TechItem = {
+  /** DB id — absent for locally-derived nodes. */
+  id?: number;
   name: string;
+  /** /devicons/*.svg path, or null if no devicon exists. */
+  icon: string | null;
   count: number;
-  projects: string[]; // slugs using this tech
-  icon: string | null; // /devicons/*.svg path, or null if no devicon exists
+  /** Slugs of projects that use this tech. */
+  projects: string[];
+  sortOrder?: number;
 };
 
 export type TechGraph = {
-  nodes: TechNode[];
-  bySlug: Map<string, TechNode>; // tech name -> node
+  /** Nodes sorted by frequency (most-used first) for a stable layout. */
+  nodes: TechItem[];
+  bySlug: Map<string, TechItem>; // tech name -> node
   slugToTechs: Map<string, string[]>; // project slug -> tech names
 };
 
 // ---------------------------------------------------------------------------
-// Tech -> devicon SVG. Only the 10 techs that exist in devicon-master are
-// mapped; the rest (GSAP, Recharts, OpenRouter, React Query, JWT, Chapa) have
-// no devicon asset, so they render as a text chip fallback in the UI.
+// Tech -> devicon SVG. Only the techs that exist in devicon-master are mapped;
+// the rest (GSAP, Recharts, OpenRouter, React Query, JWT, Chapa) have no
+// devicon asset, so they render as a text chip fallback in the UI.
 // When you add more techs, drop their SVGs into public/devicons/ and map them
 // here.
 // ---------------------------------------------------------------------------
-const TECH_ICON: Record<string, string> = {
+export const TECH_ICON: Record<string, string> = {
   React: "/devicons/react.svg",
   Vite: "/devicons/vite.svg",
   Firebase: "/devicons/firebase.svg",
@@ -32,7 +38,7 @@ const TECH_ICON: Record<string, string> = {
   "Three.js": "/devicons/threejs.svg",
   GSAP: "/devicons/gsap.svg",
   Recharts: "/devicons/recharts.svg",
-  "OpenRouter": "/devicons/openrouter.svg",
+  OpenRouter: "/devicons/openrouter.svg",
   "React Query": "/devicons/reactquery.svg",
   JWT: "/devicons/jwt.svg",
   TypeScript: "/devicons/typescript.svg",
@@ -40,37 +46,45 @@ const TECH_ICON: Record<string, string> = {
 };
 
 /**
- * Derives the Technology Constellation graph from the SAME data as the Projects
- * section, so the two can never drift out of sync. Run once at module load.
+ * Derives the tech nodes from a set of projects' `stack` arrays — used for the
+ * local fallback (pre-DB) and for the admin "import current site content".
+ * Mirrors the old module-load-time behavior exactly.
  */
-function buildTechGraph(): TechGraph {
-  const nodeMap = new Map<string, TechNode>();
-  const slugToTechs = new Map<string, string[]>();
-
-  projects.forEach((p: Project) => {
-    const techs: string[] = [];
+export function deriveTechFromProjects(projects: Project[]): TechItem[] {
+  const map = new Map<string, TechItem>();
+  projects.forEach((p) => {
     p.stack.forEach((tech) => {
-      techs.push(tech);
-      const existing = nodeMap.get(tech);
-      if (existing) {
-        existing.count += 1;
-        if (!existing.projects.includes(p.slug)) existing.projects.push(p.slug);
-      } else {
-        nodeMap.set(tech, {
-          name: tech,
-          count: 1,
-          projects: [p.slug],
-          icon: TECH_ICON[tech] ?? null,
-        });
-      }
+      const node = map.get(tech) ?? {
+        name: tech,
+        icon: TECH_ICON[tech] ?? null,
+        count: 0,
+        projects: [] as string[],
+      };
+      node.count += 1;
+      if (!node.projects.includes(p.slug)) node.projects.push(p.slug);
+      map.set(tech, node);
     });
-    slugToTechs.set(p.slug, techs);
   });
-
-  // Order nodes by frequency (most-used tech first) for a stable layout.
-  const nodes = Array.from(nodeMap.values()).sort((a, b) => b.count - a.count);
-
-  return { nodes, bySlug: nodeMap, slugToTechs };
+  return Array.from(map.values());
 }
 
-export const techGraph: TechGraph = buildTechGraph();
+/** Builds the graph used by the Constellation section from tech rows. */
+export function buildTechGraph(tech: TechItem[]): TechGraph {
+  const bySlug = new Map<string, TechItem>();
+  const slugToTechs = new Map<string, string[]>();
+
+  tech.forEach((t) => {
+    bySlug.set(t.name, t);
+    t.projects.forEach((slug) => {
+      const list = slugToTechs.get(slug) ?? [];
+      list.push(t.name);
+      slugToTechs.set(slug, list);
+    });
+  });
+
+  const nodes = [...tech].sort(
+    (a, b) => b.count - a.count || a.name.localeCompare(b.name)
+  );
+
+  return { nodes, bySlug, slugToTechs };
+}

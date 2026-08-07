@@ -19,6 +19,7 @@ export const projects: Project[] = [
     status: "live",
     stack: ["React", "TypeScript", "FastAPI", "Python", "PostgreSQL", "Vite", "Neon"],
     featured: true,
+    position: "both",
     image: "/projects/pulsewatch-dashboard.png",
     alt: "PulseWatch dashboard showing real-time monitor fleet with KPI cards and status pills",
     links: {
@@ -49,6 +50,7 @@ export const projects: Project[] = [
     status: "live",
     stack: ["React", "Vite", "Firebase", "Three.js", "GSAP", "Framer Motion"],
     featured: false,
+    position: "both",
     image: "/projects/nira.png",
     alt: "Nira AI desktop assistant interface with chat and voice controls",
     links: {
@@ -86,6 +88,7 @@ export const projects: Project[] = [
       "OpenRouter",
     ],
     featured: false,
+    position: "both",
     image: "/projects/medreminder.png",
     alt: "MedReminder app showing medication schedule and adherence chart",
     links: {
@@ -121,6 +124,7 @@ export const museumExtras: Project[] = [
     status: "live",
     stack: ["React", "Vite", "TypeScript", "Tailwind", "Express", "MongoDB"],
     featured: false,
+    position: "gallery",
     image: "/projects/menstrual.jpg",
     alt: "Menstrual and period tracking app home screen with cycle overview",
     links: {
@@ -145,6 +149,7 @@ export const museumExtras: Project[] = [
     status: "live",
     stack: ["React", "Vite", "Data Visualization", "Charts"],
     featured: false,
+    position: "gallery",
     image: "/projects/clean-city.png",
     alt: "Clean City report and restore dashboard with city initiative maps",
     links: {
@@ -165,6 +170,7 @@ export const museumExtras: Project[] = [
     status: "live",
     stack: ["Python", "Jupyter", "Pandas", "Streamlit", "Data Viz"],
     featured: false,
+    position: "gallery",
     image: "/projects/data-analysis.jpeg",
     alt: "Jupyter notebook with Python data analysis and Streamlit dashboard",
     links: {

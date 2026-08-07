@@ -66,6 +66,46 @@ Configured for **Netlify**:
 - `public/_redirects` provides the SPA fallback (`/* /index.html 200`).
 - The contact form posts to Netlify Forms — no environment variables needed.
 
+## Admin panel (Neon + Netlify Functions)
+
+The site has a password-protected editor at `/admin` — click the `©` in the
+footer to reach it. It lets you add / replace / delete / reorder content for the
+four sections: Projects Observatory, Missions, Gallery, and Technology
+Constellation. Content is stored in **Neon Postgres** and served through
+**Netlify Functions**; the site falls back to the bundled `src/data/*` when the
+API is unreachable, so it still works as a plain static build.
+
+### One-time setup
+
+1. Create a free [Neon](https://neon.tech) project and copy the **pooled**
+   connection string → `DATABASE_URL`.
+2. Pick your admin password and generate its hash plus a JWT secret:
+
+   ```bash
+   node scripts/hash-password.mjs "your-secret-password"
+   ```
+
+3. Set three environment variables — in `.env` for local dev **and** in the
+   Netlify UI (Site settings → Environment variables) for production:
+   `DATABASE_URL`, `ADMIN_SECRET`, `ADMIN_PASSWORD_HASH`.
+   The schema tables are created automatically on first function call — no
+   manual migration.
+4. Run locally with `npx netlify-cli dev` (the Vite dev server proxies
+   `/.netlify/functions/*` to Netlify's local functions server on :8888).
+
+### First login
+
+Log in at `/admin`, then click **Import site content** to copy the current
+bundled projects / missions / tech into the database. From then on the site
+renders from the DB; every edit publishes instantly.
+
+### Security notes
+
+- The admin password is stored only as a bcrypt hash; sessions are short-lived
+  JWTs signed with `ADMIN_SECRET`. Nothing secret is shipped to the client.
+- Login is rate-limited per IP. Images uploaded via the editor are compressed
+  client-side and stored as data URIs in the DB.
+
 ## Notes
 
 - Secrets are never committed (`.env`, `.env.*` are git-ignored).

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { ExternalLink, Github, Sparkles, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { museumProjects } from "../data/projects";
 import type { Project, ProjectStatus } from "../data/types";
 import { Section } from "../components/Section";
+import { useContent } from "../lib/store";
 
 type GalleryMode = "mobile" | "tablet" | "desktop";
 
@@ -233,6 +233,7 @@ function CardBody({ p }: { p: Project }) {
  *    drifts across the glass, and the star layer parallaxes. Pagination dots.
  */
 export function Museum({ glow = false }: { glow?: boolean }) {
+  const { galleryProjects: museumProjects } = useContent();
   const [active, setActive] = useState<Project | null>(null);
   const mode = useGalleryMode();
   const isDesktop = mode === "desktop";

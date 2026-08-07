@@ -13,3 +13,6 @@ skills/hallmark
 
 # JetBrains / IDE
 .idea
+
+# Local Netlify folder
+.netlify

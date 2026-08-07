@@ -4,9 +4,8 @@ import { Loader } from "./sections/Loader";
 import { Hero } from "./sections/Hero";
 import { useReducedMotion as useRM } from "./lib/useReducedMotion";
 import { useLenis } from "./lib/useLenis";
-import {
-  ActiveSectionContext,
-} from "./lib/activeSection";
+import { ActiveSectionContext } from "./lib/activeSection";
+import { ContentProvider } from "./lib/store";
 
 // Heavy / below-the-fold sections are code-split and lazy-mounted so the
 // initial bundle and first paint stay lean (Lighthouse guardrail).
@@ -34,6 +33,11 @@ const Footer = lazy(() =>
 
 // The R3F starfield is its own lazy chunk too.
 const Starfield = lazy(() => import("./components/Starfield"));
+
+// Admin panel — separate route (/admin), its own chunk.
+const Admin = lazy(() =>
+  import("./admin/AdminApp").then((m) => ({ default: m.AdminApp }))
+);
 
 const NAV_IDS = [
   "hero",
@@ -79,6 +83,13 @@ export default function App() {
   const reduced = useRM();
   useLenis();
   const [active, setActive] = useState("hero");
+  const [route, setRoute] = useState(() => window.location.pathname);
+
+  useEffect(() => {
+    const onPop = () => setRoute(window.location.pathname);
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   // Single scroll-spy: drives both the navbar highlight and the per-section
   // glow. Lifted here so it isn't duplicated by the Navbar.
@@ -99,8 +110,20 @@ export default function App() {
     return () => obs.disconnect();
   }, []);
 
+  // /admin is a separate lightweight route — no loader, no starfield.
+  if (route.startsWith("/admin")) {
+    return (
+      <ContentProvider>
+        <Suspense fallback={null}>
+          <Admin />
+        </Suspense>
+      </ContentProvider>
+    );
+  }
+
   return (
-    <ActiveSectionContext.Provider value={active}>
+    <ContentProvider>
+      <ActiveSectionContext.Provider value={active}>
       <Loader />
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-background" />
@@ -161,6 +184,7 @@ export default function App() {
           </Suspense>
         </LazyMount>
       </main>
-    </ActiveSectionContext.Provider>
+      </ActiveSectionContext.Provider>
+    </ContentProvider>
   );
 }

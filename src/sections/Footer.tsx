@@ -1,6 +1,7 @@
 import { site } from "../data/site";
 import { Socials } from "../components/Socials";
 import { socials } from "../data/socials";
+import { navigate } from "../lib/navigate";
 
 export function Footer() {
   return (
@@ -11,10 +12,16 @@ export function Footer() {
           <span className="text-primary">.</span>
         </div>
         <Socials links={socials} />
-        <p className="text-sm text-muted">
+        {/* Secret entry to the admin panel — looks like plain copyright text. */}
+        <button
+          type="button"
+          onClick={() => navigate("/admin")}
+          aria-label="Admin panel"
+          className="text-sm text-muted transition-colors hover:text-text"
+        >
           © {new Date().getFullYear()} {site.name}. Built with React, Three.js,
           and too much coffee.
-        </p>
+        </button>
       </div>
     </footer>
   );

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { techGraph } from "../lib/techGraph";
-import { projects } from "../data/projects";
 import { Section } from "../components/Section";
+import { useContent } from "../lib/store";
 
 /**
  * Technology Constellation — nodes are distinct techs from projects.ts.
@@ -10,6 +9,7 @@ import { Section } from "../components/Section";
  * cards and dims the rest. Never hover-only (accessibility requirement).
  */
 export function Constellation({ glow = false }: { glow?: boolean }) {
+  const { graph: techGraph, observatoryProjects: projects } = useContent();
   const [active, setActive] = useState<string | null>(null);
 
   const connectedSlugs = active

@@ -148,6 +148,9 @@ export const handler = async (event: {
         return await reorderAction(s, body);
       case "seed":
         return await seed(s, body);
+      case "verify":
+        // Reached only with a valid token (auth check runs first).
+        return json(200, { ok: true });
       default:
         return badRequest(`Unknown action: ${action}`);
     }
