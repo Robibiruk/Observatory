@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github, X, Sparkles } from "lucide-react";
 import { sortedProjects } from "../data/projects";
@@ -19,6 +19,16 @@ const STATUS_LABEL: Record<Project["status"], string> = {
  */
 export function Projects({ glow = false }: { glow?: boolean }) {
   const [open, setOpen] = useState<Project | null>(null);
+
+  // This site runs Lenis smooth-scroll, which installs a window-level wheel
+  // listener that preventDefaults — so native overflow-y-auto on this modal
+  // can't scroll and the page behind moves instead. Stop Lenis while the
+  // modal is open (its RAF loop + preventDefault both die).
+  useEffect(() => {
+    const lenis = (window as unknown as { lenis?: { stop: () => void; start: () => void } }).lenis;
+    if (open) lenis?.stop();
+    return () => { lenis?.start(); };
+  }, [open]);
 
   return (
     <Section id="projects" className="section-pad" glow={glow}>
@@ -100,7 +110,10 @@ export function Projects({ glow = false }: { glow?: boolean }) {
             aria-label={`${open.title} details`}
           >
             <motion.div
-              className="glass max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-3xl p-6 sm:p-8"
+              data-lenis-prevent
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+              className="glass max-h-[88vh] w-full max-w-2xl overflow-y-auto overscroll-contain rounded-3xl p-6 sm:p-8"
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 40, opacity: 0 }}
