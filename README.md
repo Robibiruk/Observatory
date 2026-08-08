@@ -88,6 +88,9 @@ API is unreachable, so it still works as a plain static build.
 3. Set three environment variables — in `.env` for local dev **and** in the
    Netlify UI (Site settings → Environment variables) for production:
    `DATABASE_URL`, `ADMIN_SECRET`, `ADMIN_PASSWORD_HASH`.
+   `ADMIN_PASSWORD_HASH` is printed base64-encoded (a `$`-free form). Use that
+   value as-is: raw `$2b$12$...` hashes also work, but some env-var editors
+   mangle values at `$` and silently break login.
    The schema tables are created automatically on first function call — no
    manual migration.
 4. Run locally with `npx netlify-cli dev` (the Vite dev server proxies

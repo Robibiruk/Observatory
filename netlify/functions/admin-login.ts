@@ -1,4 +1,9 @@
-import { signSessionToken, verifyPassword } from "./_shared/auth";
+import {
+  resolvePasswordHash,
+  signSessionToken,
+  storedHashLooksValid,
+  verifyPassword,
+} from "./_shared/auth";
 import { json, methodNotAllowed, parseBody } from "./_shared/http";
 
 // ---------------------------------------------------------------------------
@@ -27,6 +32,31 @@ export const handler = async (event: {
 }) => {
   if (event.httpMethod !== "POST") return methodNotAllowed();
 
+  // Give an actionable error instead of a generic 401 when the server isn't
+  // configured yet — a 401 always means "wrong password" afterwards.
+  if (!process.env.ADMIN_PASSWORD_HASH) {
+    return json(500, {
+      error: "Server error: ADMIN_PASSWORD_HASH env var is not set",
+    });
+  }
+  if (!process.env.ADMIN_SECRET) {
+    return json(500, {
+      error: "Server error: ADMIN_SECRET env var is not set",
+    });
+  }
+
+  // A stored hash that doesn't parse as bcrypt means the env value was mangled
+  // (typically `$` signs stripped/truncated by an env-var editor). Surface that
+  // instead of silently returning 401 for every password.
+  if (!storedHashLooksValid()) {
+    return json(500, {
+      error:
+        "ADMIN_PASSWORD_HASH looks corrupt (not a valid bcrypt hash). " +
+        "Re-copy it from .env exactly — the base64 form is recommended — " +
+        "then redeploy.",
+    });
+  }
+
   prune();
   const ip =
     event.headers?.["x-nf-client-connection-ip"] ??
@@ -51,7 +81,13 @@ export const handler = async (event: {
       count,
       blockedUntil: count >= MAX_ATTEMPTS ? now + BLOCK_MS : 0,
     });
-    return json(401, { error: "Incorrect password" });
+    // Non-secret fingerprint of what the stored hash resolved to, so a stale or
+    // base64-not-yet-decoded value is diagnosable from the 401 alone.
+    const h = resolvePasswordHash();
+    return json(401, {
+      error: "Incorrect password",
+      debug: { hashLength: h.length, hashPrefix: h.slice(0, 4) },
+    });
   }
 
   attempts.delete(ip);

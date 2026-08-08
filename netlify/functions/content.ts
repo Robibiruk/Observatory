@@ -18,6 +18,11 @@ export const handler = async (event: {
   headers: Record<string, string | undefined>;
 }) => {
   if (event.httpMethod !== "GET") return methodNotAllowed();
+  if (!process.env.DATABASE_URL) {
+    return json(500, {
+      error: "Server error: DATABASE_URL env var is not set",
+    });
+  }
   try {
     await ensureSchema();
     const s = db();
