@@ -19,5 +19,5 @@ If a file is missing, the card simply hides the broken image — no crash.
 ## Optional
 - `profile.webp` — your portrait for the About section. If absent, a branded
   monogram (your initials) is shown instead.
-- `cv.pdf` — enables the "Download CV" affordance (not currently wired to a
+- `cv-new.pdf` — enables the "Download CV" affordance (not currently wired to a
   button; referenced by site.ts cvUrl for future use).

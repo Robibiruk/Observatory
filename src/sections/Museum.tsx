@@ -191,6 +191,7 @@ function CardBody({ p }: { p: Project }) {
           src={p.image}
           alt={p.alt}
           loading="lazy"
+          draggable={false}
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.visibility = "hidden";
           }}
@@ -225,8 +226,9 @@ function CardBody({ p }: { p: Project }) {
  * The Gallery — a curated collection of projects.
  *
  * Three responsive presentations, all reduced-motion safe:
- *  - Desktop (>=1024px): cursor-driven drifting marquee (hover left = faster,
- *    right = reverse). Keep as-is.
+ *  - Desktop (>=1024px): drifting marquee. Grab (press and hold) to pause it
+ *    and drag left/right to scroll in both directions; release to let it drift
+ *    again. A quick press (no movement) opens the project overview.
  *  - Tablet (640-1023px): horizontal snap carousel showing ~3 cards.
  *  - Mobile (<=639px): one large glass card at a time, swipeable. Neighbours
  *    peek in, the centred card tilts 2-3deg, cards softly float, a sheen
@@ -265,6 +267,59 @@ export function Museum({ glow = false }: { glow?: boolean }) {
     }
     setSpeedLabel(`${speedMultiplier.current.toFixed(1)}x`);
   }, []);
+
+  // Hold-and-drag on desktop: pressing pauses the drift, dragging moves the
+  // reel 1:1 in either direction, and a quick press (no movement) stays a click.
+  const dragging = useRef(false);
+  const dragStartX = useRef(0);
+  const lastDragX = useRef(0);
+  const didDrag = useRef(false);
+  const suppressClick = useRef(false);
+
+  const moveDrag = (e: PointerEvent) => {
+    const track = trackRef.current;
+    if (!dragging.current || !track) return;
+    const dx = e.clientX - lastDragX.current;
+    lastDragX.current = e.clientX;
+    offsetRef.current += dx;
+    // Content is two identical copies, so wrapping into (-w, 0] is seamless
+    // and keeps the drag infinite in both directions.
+    const w = track.scrollWidth / 2;
+    while (offsetRef.current >= 0) offsetRef.current -= w;
+    while (offsetRef.current <= -w) offsetRef.current += w;
+    track.style.transform = `translate3d(${offsetRef.current}px,0,0)`;
+    if (Math.abs(e.clientX - dragStartX.current) > 5) didDrag.current = true;
+  };
+
+  const endDrag = () => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    document.body.style.cursor = "";
+    if (trackRef.current) trackRef.current.style.cursor = "";
+    suppressClick.current = didDrag.current;
+    // The click after a drag fires right on pointerup; clear the flag a tick
+    // later so a future keyboard activation isn't wrongly suppressed.
+    window.setTimeout(() => {
+      suppressClick.current = false;
+    }, 0);
+    window.removeEventListener("pointermove", moveDrag);
+    window.removeEventListener("pointerup", endDrag);
+    window.removeEventListener("pointercancel", endDrag);
+  };
+
+  const beginDrag = (e: React.PointerEvent) => {
+    if (reduced || !isDesktop) return;
+    dragging.current = true;
+    didDrag.current = false;
+    suppressClick.current = false;
+    dragStartX.current = e.clientX;
+    lastDragX.current = e.clientX;
+    document.body.style.cursor = "grabbing";
+    if (trackRef.current) trackRef.current.style.cursor = "grabbing";
+    window.addEventListener("pointermove", moveDrag);
+    window.addEventListener("pointerup", endDrag);
+    window.addEventListener("pointercancel", endDrag);
+  };
 
   // Decay speed back toward 1x over time (2 seconds of no clicks)
   useEffect(() => {
@@ -305,7 +360,7 @@ export function Museum({ glow = false }: { glow?: boolean }) {
     const frame = (now: number) => {
       const dt = Math.min(now - last, 50); // clamp on tab refocus
       last = now;
-      if (!active) {
+      if (!active && !dragging.current) {
         let speed = BASE * speedMultiplier.current;
         if (mouseX >= 0) {
           const rel = (mouseX - rect.left) / rect.width; // 0 left .. 1 right
@@ -406,7 +461,7 @@ export function Museum({ glow = false }: { glow?: boolean }) {
         </h2>
         <p className="mt-4 max-w-2xl text-muted">
           {isDesktop
-            ? "Explored, solved, and carried forward — move to the far left to speed the reel up, the far right to send it back. Click a card to open its story."
+            ? "Explored, solved, and carried forward — grab and drag to scroll either way, or let it drift. Click a card to open its story."
             : "Explored, solved, and carried forward — swipe through the collection. Tap a card to open its story."}
         </p>
       </div>
@@ -458,20 +513,30 @@ export function Museum({ glow = false }: { glow?: boolean }) {
 
         <div
           ref={trackRef}
+          onPointerDown={isDesktop && !reduced ? beginDrag : undefined}
           className={
             isDesktop
               ? `relative z-[1] flex w-max ${
-                  reduced ? "overflow-x-auto px-6" : "px-3 will-change-transform"
+                  reduced
+                    ? "overflow-x-auto px-6"
+                    : "px-3 select-none cursor-grab will-change-transform"
                 }`
               : "-mx-6 relative z-[1] flex w-full snap-x snap-mandatory overflow-x-auto px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           }
+          style={isDesktop && !reduced ? { touchAction: "pan-y" } : undefined}
         >
           {items.map((p, i) =>
             isDesktop ? (
               <button
                 key={`${p.slug}-${i}`}
                 type="button"
-                onClick={() => setActive(p)}
+                onClick={() => {
+                  if (suppressClick.current) {
+                    suppressClick.current = false;
+                    return;
+                  }
+                  setActive(p);
+                }}
                 className="group relative mr-6 w-[300px] shrink-0 overflow-hidden rounded-3xl border border-white/10 bg-surface text-left transition-all hover:border-accent/50 hover:shadow-glow-accent focus-visible:border-accent focus-visible:outline-none sm:w-[360px]"
               >
                 <CardBody p={p} />

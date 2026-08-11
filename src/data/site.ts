@@ -18,5 +18,5 @@ export const site: SiteConfig = {
     "Distributed systems & edge inference",
   ],
   email: "natim7520@gmail.com",
-  cvUrl: "/cv.pdf",
+  cvUrl: "/cv-new.pdf",
 };
