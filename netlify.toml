@@ -5,11 +5,32 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# SPA fallback — route all paths to index.html so client-side routing works.
+# Static files (sitemap, robots, manifests, assets) must bypass the SPA
+# fallback — otherwise Netlify serves index.html for /sitemap.xml and GSC
+# can't read it. Netlify evaluates redirects top-to-bottom; first match wins.
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap.xml"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
+  force = true
+
+# SPA fallback — route all remaining paths to index.html.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Serve sitemap.xml with the correct content type so GSC accepts it.
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Content-Type = "application/xml"
 
 # Security headers (served on every response via Netlify's CDN).
 [[headers]]
