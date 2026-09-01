@@ -4,7 +4,7 @@ import type { SiteConfig } from "./types";
 // Carried over from the previous portfolio where known; AI/role framing is current.
 export const site: SiteConfig = {
   name: "Robel Biruk",
-  identity: "AI Engineer · Full-Stack Developer · Pharmacy Student",
+  identity: "AI Engineer · Full-Stack Developer",
   location: "Addis Ababa, Ethiopia",
   tagline: "Building intelligent tools at the intersection of code, health, and language.",
   mission:
