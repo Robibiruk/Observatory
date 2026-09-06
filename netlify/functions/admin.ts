@@ -1,12 +1,12 @@
-import { db, ensureSchema } from "./_shared/db";
-import { readBearer, verifySessionToken } from "./_shared/auth";
+import { db, ensureSchema } from "./_shared/db.ts";
+import { readBearer, verifySessionToken } from "./_shared/auth.ts";
 import {
   badRequest,
   json,
   methodNotAllowed,
   parseBody,
   unauthorized,
-} from "./_shared/http";
+} from "./_shared/http.ts";
 import {
   deleteById,
   insertMission,
@@ -21,7 +21,7 @@ import {
   type ProjectWire,
   type TableKey,
   type TechWire,
-} from "./_shared/mapping";
+} from "./_shared/mapping.ts";
 
 type Row = Record<string, unknown>;
 

@@ -3,8 +3,8 @@ import {
   signSessionToken,
   storedHashLooksValid,
   verifyPassword,
-} from "./_shared/auth";
-import { json, methodNotAllowed, parseBody } from "./_shared/http";
+} from "./_shared/auth.ts";
+import { json, methodNotAllowed, parseBody } from "./_shared/http.ts";
 
 // ---------------------------------------------------------------------------
 // Simple in-memory rate limiter. State resets on cold start, which is fine for
@@ -12,7 +12,6 @@ import { json, methodNotAllowed, parseBody } from "./_shared/http";
 // client IP Netlify reports.
 // ---------------------------------------------------------------------------
 const MAX_ATTEMPTS = 5;
-const WINDOW_MS = 15 * 60 * 1000;
 const BLOCK_MS = 15 * 60 * 1000;
 
 const attempts = new Map<string, { count: number; blockedUntil: number }>();
