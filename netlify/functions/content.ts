@@ -1,10 +1,10 @@
-import { db, ensureSchema } from "./_shared/db";
+import { db, ensureSchema } from "./_shared/db.ts";
 import {
   missionFromRow,
   projectFromRow,
   techFromRow,
-} from "./_shared/mapping";
-import { json, methodNotAllowed } from "./_shared/http";
+} from "./_shared/mapping.ts";
+import { json, methodNotAllowed } from "./_shared/http.ts";
 
 type Row = Record<string, unknown>;
 

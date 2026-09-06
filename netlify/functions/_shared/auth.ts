@@ -42,7 +42,7 @@ export async function verifyPassword(password: string): Promise<boolean> {
   }
 }
 
-export async function signSessionToken(): Promise<string> {
+export function signSessionToken(): Promise<string> {
   return new SignJWT({ role: "admin" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
