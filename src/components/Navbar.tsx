@@ -10,7 +10,7 @@ const NAV = [
   { id: "about", label: "About" },
   { id: "projects", label: "Projects" },
   { id: "timeline", label: "Time Machine" },
-  { id: "constellation", label: "Stack" },
+  { id: "constellation", label: "Tools" },
   { id: "museum", label: "Gallery" },
   { id: "contact", label: "Contact" },
 ];

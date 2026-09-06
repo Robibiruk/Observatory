@@ -12,14 +12,15 @@ import type { Project } from "./types";
 
 export const projects: Project[] = [
   {
+    id: 1,
     slug: "pulsewatch",
     title: "PulseWatch",
     oneLiner:
       "Self-hosted uptime monitoring platform with Telegram alerts and AI-explained incidents.",
     status: "live",
-    stack: ["React", "TypeScript", "FastAPI", "Python", "PostgreSQL", "Vite", "Neon"],
     featured: true,
     position: "both",
+    sortOrder: 0,
     image: "/projects/pulsewatch-dashboard.png",
     alt: "PulseWatch dashboard showing real-time monitor fleet with KPI cards and status pills",
     links: {
@@ -41,16 +42,18 @@ export const projects: Project[] = [
     ],
     lessons:
       "The distributed claim-locking pattern (SKIP LOCKED + lease) made it possible to run the monitoring engine for free across Render's sleeping API + GitHub Actions cron — no paid worker service needed.",
+    stack: ["React", "TypeScript", "FastAPI", "Python", "PostgreSQL", "Vite", "Neon"],
   },
   {
+    id: 2,
     slug: "nira-ai",
     title: "Nira AI",
     oneLiner:
       "A local-first desktop AI assistant — voice, reasoning, and tool use with a calm glass UI.",
     status: "live",
-    stack: ["React", "Vite", "Firebase", "Three.js", "GSAP", "Framer Motion"],
     featured: false,
     position: "both",
+    sortOrder: 1,
     image: "/projects/nira.png",
     alt: "Nira AI desktop assistant interface with chat and voice controls",
     links: {
@@ -69,26 +72,18 @@ export const projects: Project[] = [
     ],
     lessons:
       "Keeping state local-first (localStorage mirror) made the assistant feel instant and resilient, even when Firebase writes silently fail.",
+    stack: ["React", "Vite", "Firebase", "Three.js", "GSAP", "Framer Motion"],
   },
   {
+    id: 3,
     slug: "medreminder",
     title: "MedReminder",
     oneLiner:
       "Medication reminder app with an AI layer (OpenRouter) for natural scheduling.",
-    status: "live", // was prototype; EventHub is the prototype now
-    stack: [
-      "React",
-      "Vite",
-      "Tailwind",
-      "Express",
-      "MongoDB",
-      "Firebase",
-      "Framer Motion",
-      "Recharts",
-      "OpenRouter",
-    ],
+    status: "live",
     featured: false,
     position: "both",
+    sortOrder: 2,
     image: "/projects/medreminder.png",
     alt: "MedReminder app showing medication schedule and adherence chart",
     links: {
@@ -106,6 +101,113 @@ export const projects: Project[] = [
     ],
     lessons:
       "Letting users type reminders in plain language (vs rigid forms) dramatically lowered onboarding friction — the AI parsing step earned its place.",
+    stack: ["React", "Vite", "Tailwind", "Express", "MongoDB", "Firebase", "Framer Motion", "Recharts", "OpenRouter"],
+  },
+  {
+    id: 16,
+    slug: "devwrapped",
+    title: "DevWrapped",
+    oneLiner:
+      "Turn your GitHub activity into a beautiful, shareable annual story with coding stats and a developer archetype.",
+    status: "live",
+    featured: false,
+    position: "observatory",
+    sortOrder: 3,
+    image: "/projects/devwrapped.png",
+    alt: "DevWrapped annual developer statistics and GitHub activity story",
+    links: {
+      live: "https://devwrapped-app.vercel.app/",
+      repo: "https://github.com/Robibiruk/DevWrapped",
+    },
+    overview:
+      "DevWrapped turns a developer's GitHub activity into an interactive annual story. It transforms raw contribution and repository data into an engaging visual summary containing coding statistics, activity patterns, streaks, personality insights, and a developer archetype.",
+    architecture:
+      "GitHub API → Data Collection → Statistics / Classification → Story Generation → Interactive Web Experience. The application retrieves GitHub activity and repository information, processes the raw data into meaningful statistics, derives developer characteristics, and presents the results through a sequence of visual story sections.",
+    features: [
+      "GitHub activity analysis",
+      "Coding statistics",
+      "Contribution streaks",
+      "Repository and activity insights",
+      "Developer personality analysis",
+      "Developer archetype",
+      "Interactive annual story",
+      "Shareable presentation",
+      "GitHub-powered data",
+      "Visual data storytelling",
+    ],
+    lessons:
+      "Working with the GitHub API and developer activity data, transforming raw API data into meaningful statistics, designing data-driven storytelling interfaces, and creating shareable experiences from personal developer data.",
+    stack: ["React", "TypeScript", "GitHub API", "Vite", "Cloudfare", "JavaScript", "CSS", "Vercel"],
+  },
+  {
+    id: 17,
+    slug: "spiderman-github-readme",
+    title: "Spider-Man GitHub README",
+    oneLiner:
+      "Turn your GitHub profile into an animated Spider-Verse comic-book README with live developer stats.",
+    status: "live",
+    featured: false,
+    position: "both",
+    sortOrder: 4,
+    image: "/projects/spiderman-readme.png",
+    alt: "Animated Spider-Verse themed GitHub profile README showing developer statistics",
+    links: {
+      live: "https://spiderman-github-readme.vercel.app/",
+      repo: "https://github.com/Robibiruk/spiderman-github-readme",
+    },
+    overview:
+      "Spider-Man GitHub README transforms a standard GitHub profile into an animated Spider-Verse-inspired comic-book experience. The project combines GitHub developer statistics with a highly visual presentation designed to make a profile more memorable. It is intentionally lightweight and requires no backend, while supporting multiple approaches for keeping GitHub statistics fresh.",
+    architecture:
+      "GitHub Profile → GitHub Statistics → Dynamic README Assets → Animated / Themed Presentation. The project is designed as a zero-backend GitHub profile experience. GitHub activity and profile information are transformed into visual assets and README content that can be embedded directly into a GitHub profile.",
+    features: [
+      "Spider-Verse themed GitHub README",
+      "Live GitHub developer statistics",
+      "Animated comic-book presentation",
+      "GitHub profile integration",
+      "Zero-backend architecture",
+      "Multiple statistics refresh methods",
+      "Dynamic SVG assets",
+      "Responsive presentation",
+      "Highly customizable visual theme",
+    ],
+    lessons:
+      "Working with GitHub profile data, building dynamic README experiences without a traditional backend, designing animated visual interfaces within GitHub's constraints, creating reusable assets for developer profiles, and automating the refresh of external developer statistics.",
+    stack: ["GitHub API", "JavaScript", "TypeScript", "SVG", "HTML", "CSS", "GitHub Actions", "Vercel"],
+  },
+  {
+    id: 15,
+    slug: "repo-to-landing-page",
+    title: "RepoPages — GitHub Repository to Landing Page",
+    oneLiner:
+      "Turn any GitHub repository into a polished, AI-generated product website in minutes.",
+    status: "live",
+    featured: false,
+    position: "both",
+    sortOrder: 5,
+    image: "/projects/repopages.png",
+    alt: "RepoPages interface generating a product landing page from a GitHub repository",
+    links: {
+      live: "https://repo-to-landing-page.vercel.app/",
+      repo: "https://github.com/Robibiruk/Repo-to-Landing-page",
+    },
+    overview:
+      "RepoPages transforms GitHub repositories into polished product landing pages. Instead of manually writing marketing copy and designing a website for every project, developers can provide a repository and use the application to analyze the project and generate a professional presentation. The project focuses on automating the gap between building software and presenting it — turning technical project information into a visually polished website that can be customized, exported, and deployed.",
+    architecture:
+      "GitHub Repository → Repository Analysis → AI Content Generation → Landing Page Builder → Preview / Export / Deployment. The application takes repository information as its input, analyzes project documentation and metadata, and transforms that information into structured website content. The generated content is then rendered through reusable landing-page components that can be customized and prepared for deployment.",
+    features: [
+      "GitHub repository analysis",
+      "AI-generated product content",
+      "Automatic landing-page generation",
+      "Polished website templates",
+      "Customizable generated content",
+      "Live preview",
+      "Export-ready pages",
+      "Deployment-ready output",
+      "Developer-focused workflow",
+    ],
+    lessons:
+      "Building AI-powered developer tools, turning unstructured repository information into structured product content, designing reusable components for dynamically generated websites, automating the transition from software project to product presentation, and building tools that improve developer workflows.",
+    stack: ["React", "TypeScript", "Vite", "AI/LLM APIs", "Github API", "Modern CSS", "Vercel"],
   },
 ];
 
@@ -117,19 +219,21 @@ export const projects: Project[] = [
 // ----------------------------------------------------------------------------
 export const museumExtras: Project[] = [
   {
+    id: 4,
     slug: "menstrual-tracker",
     title: "Menstrual / Period Tracking App",
     oneLiner:
       "A calm, ad-free cycle and pregnancy tracking app — emoji UI, RTL support, no clutter.",
     status: "live",
-    stack: ["React", "Vite", "TypeScript", "Tailwind", "Express", "MongoDB"],
     featured: false,
     position: "gallery",
+    sortOrder: 6,
     image: "/projects/menstrual.jpg",
     alt: "Menstrual and period tracking app home screen with cycle overview",
     links: {
       live: "https://atnasya-health.netlify.app/",
-      repo: "https://github.com/Robibiruk/atnasya-health-frontend",},
+      repo: "https://github.com/Robibiruk/atnasya-health-frontend",
+    },
     overview:
       "A period and cycle tracking app focused on a friendly, ad-free experience. Built with an emoji-driven UI, right-to-left language support, and a clean information architecture that keeps the user's data first.",
     architecture:
@@ -140,37 +244,58 @@ export const museumExtras: Project[] = [
       "Cycle + pregnancy tracking modes",
     ],
     lessons: "",
+    stack: ["React", "Vite", "TypeScript", "Tailwind", "Express", "MongoDB"],
   },
   {
+    id: 5,
     slug: "clean-city",
-    title: "Clean City — Report & Restore",
+    title: "CleanCity",
     oneLiner:
-      "A platform for reporting and restoring clean-city initiatives, with data analysis and visualization.",
+      "A community environmental reporting platform for mapping, validating, and resolving local problems.",
     status: "live",
-    stack: ["React", "Vite", "Data Visualization", "Charts"],
     featured: false,
-    position: "gallery",
+    position: "observatory",
+    sortOrder: 7,
     image: "/projects/clean-city.png",
-    alt: "Clean City report and restore dashboard with city initiative maps",
+    alt: "CleanCity environmental reporting map showing community reports in Addis Ababa",
     links: {
       live: "https://clean-city-report.vercel.app/",
       repo: "https://github.com/Robibiruk/clean-city",
     },
     overview:
-      "A project focused on reporting and restoring clean city initiatives, showcasing data analysis and visualization techniques.",
-    architecture: "",
-    features: ["Citizen reporting flow", "Data analysis dashboard", "Restoration tracking"],
-    lessons: "",
+      "CleanCity is a community environmental reporting platform that allows residents to report local problems directly on an interactive map. Users can select a location, attach an image, categorize an issue, and publish the report to a shared community feed. The platform combines geospatial visualization with community validation through upvotes and a resolution workflow. Reports can be marked as solved or identified as false, while statistics provide an overview of the community's environmental issues.",
+    architecture:
+      "React/Vite Frontend → Express REST API → MongoDB Atlas. The frontend uses React, React Router, Leaflet, and shared report state to synchronize the interactive map and community feed. The Express backend provides REST endpoints for report creation, image uploads, statistics, upvotes, resolution, and deletion. MongoDB Atlas stores report data while Multer handles uploaded images.",
+    features: [
+      "Interactive environmental map",
+      "Location-based reporting",
+      "Image uploads",
+      "Environmental issue categories",
+      "Community upvotes",
+      "Report resolution workflow",
+      "False-report removal",
+      "Community statistics",
+      "Category filtering",
+      "Live report updates",
+      "Street, satellite, and dark map layers",
+      "Interactive report markers",
+      "Detailed report view",
+      "Responsive dark interface",
+    ],
+    lessons:
+      "Building location-based applications with interactive maps, integrating Leaflet with React, designing REST APIs for community-generated content, handling multipart image uploads, modeling report status and community validation, and synchronizing shared state between a map and feed.",
+    stack: ["React 19", "Vite", "Tailwind CSS", "Leaflet", "React Router", "Node.js", "Express", "Multer", "MongoDB Atlas"],
   },
   {
+    id: 6,
     slug: "data-analysis-python",
     title: "Data Analysis with Python",
     oneLiner:
       "A Jupyter Notebook assignment analyzing datasets — cleaning, visualization, and basic analysis.",
     status: "live",
-    stack: ["Python", "Jupyter", "Pandas", "Streamlit", "Data Viz"],
     featured: false,
     position: "gallery",
+    sortOrder: 8,
     image: "/projects/data-analysis.jpeg",
     alt: "Jupyter notebook with Python data analysis and Streamlit dashboard",
     links: {
@@ -182,6 +307,7 @@ export const museumExtras: Project[] = [
     architecture: "",
     features: ["Data cleaning with Pandas", "Visualization", "Streamlit deployment"],
     lessons: "",
+    stack: ["Python", "Jupyter", "Pandas", "Streamlit", "Data Viz"],
   },
 ];
 

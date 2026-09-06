@@ -1,114 +1,102 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { Section } from "../components/Section";
-import { useContent } from "../lib/store";
+import { toolCategories, type Tool } from "../data/tools";
+import { getIconSource, getThesvgSvg } from "../data/icon-resolver";
 
 /**
- * Technology Constellation — nodes are distinct techs from projects.ts.
- * Hover OR keyboard-focus OR click a tech node highlights the connected project
- * cards and dims the rest. Never hover-only (accessibility requirement).
+ * Icon component that resolves tool icons using devicons (preferred) or thesvg.
  */
+function ToolIcon({ toolName, size = 24 }: { toolName: string; size?: number }) {
+  const source = getIconSource(toolName);
+
+  if (!source) {
+    return (
+      <div
+        className="flex items-center justify-center rounded bg-white/10 text-[8px] font-bold text-muted"
+        style={{ width: size, height: size }}
+      >
+        ??
+      </div>
+    );
+  }
+
+  if (source.type === "thesvg") {
+    const svg = getThesvgSvg(source.value);
+    if (svg) {
+      return (
+        <div
+          style={{ width: size, height: size, overflow: 'hidden' }}
+          dangerouslySetInnerHTML={{ __html: svg }}
+        />
+      );
+    }
+    return (
+      <div
+        className="flex items-center justify-center rounded bg-white/10 text-[8px] font-bold text-muted"
+        style={{ width: size, height: size }}
+      >
+        ??
+      </div>
+    );
+  }
+
+  // devicon: load SVG from public path
+  return <DeviconImg src={source.value} size={size} />;
+}
+
+function DeviconImg({ src, size }: { src: string; size: number }) {
+  const [svg, setSvg] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(src)
+      .then((r) => r.text())
+      .then((text) => {
+        if (!cancelled) setSvg(text);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [src]);
+
+  if (!svg) {
+    return <div style={{ width: size, height: size }} />;
+  }
+
+  return <div style={{ width: size, height: size, overflow: 'hidden' }} dangerouslySetInnerHTML={{ __html: svg }} />;
+}
+
 export function Constellation({ glow = false }: { glow?: boolean }) {
-  const { graph: techGraph, observatoryProjects: projects } = useContent();
-  const [active, setActive] = useState<string | null>(null);
-
-  const connectedSlugs = active
-    ? techGraph.bySlug.get(active)?.projects ?? []
-    : null;
-
   return (
     <Section id="constellation" className="section-pad" glow={glow}>
       <div className="mx-auto max-w-6xl">
-        <p className="eyebrow mb-3">Technology Constellation</p>
+        <p className="eyebrow mb-3">Tools</p>
         <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">
           The tools I reach for
         </h2>
         <p className="mt-4 max-w-2xl text-muted">
-          Hover, tap, or focus a technology to see where it shows up across my
-          work.
+          Every tool I use to build, ship, and run my work.
         </p>
+      </div>
 
-        {/* Tech nodes */}
-        <div className="mt-10 flex flex-wrap gap-3">
-          {techGraph.nodes.map((node) => {
-            const isActive = active === node.name;
-            const isDimmed = active !== null && !isActive;
-            return (
-              <button
-                key={node.name}
-                onMouseEnter={() => setActive(node.name)}
-                onMouseLeave={() => setActive(null)}
-                onFocus={() => setActive(node.name)}
-                onBlur={() => setActive(null)}
-                onClick={() => setActive((a) => (a === node.name ? null : node.name))}
-                aria-pressed={isActive}
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 font-mono text-sm transition-all ${
-                  isActive
-                    ? "border-primary bg-primary/20 text-highlight shadow-glow"
-                    : isDimmed
-                    ? "border-white/5 bg-white/[0.02] text-muted/50"
-                    : "border-white/10 bg-surface text-text hover:border-primary/50"
-                }`}
-              >
-                {node.icon ? (
-                  <img
-                    src={node.icon}
-                    alt=""
-                    aria-hidden="true"
-                    className="h-4 w-4 object-contain"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display =
-                        "none";
-                    }}
-                  />
-                ) : (
-                  <span
-                    aria-hidden="true"
-                    className="grid h-4 w-4 place-items-center rounded-[3px] bg-white/15 text-[8px] font-bold text-muted"
-                  >
-                    {node.name.charAt(0)}
-                  </span>
-                )}
-                {node.name}
-                <span className="ml-1 text-xs text-muted">{node.count}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Connected project cards */}
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((p) => {
-            const highlight =
-              connectedSlugs === null || connectedSlugs.includes(p.slug);
-            return (
-              <motion.div
-                key={p.slug}
-                layout
-                animate={{ opacity: highlight ? 1 : 0.3 }}
-                className="glass rounded-2xl p-5"
-              >
-                <h3 className="font-display text-lg font-bold text-text">
-                  {p.title}
-                </h3>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {(techGraph.slugToTechs.get(p.slug) ?? []).map((t) => (
-                    <span
-                      key={t}
-                      className={`rounded-full px-2 py-0.5 font-mono text-[11px] ${
-                        active === t
-                          ? "bg-primary/25 text-highlight"
-                          : "bg-white/5 text-muted"
-                      }`}
-                    >
-                      {t}
-                    </span>
-                  ))}
+      <div className="mx-auto mt-12 max-w-6xl space-y-10">
+        {toolCategories.map((cat) => (
+          <div key={cat.label}>
+            <h3 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider text-primary">
+              {cat.label}
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              {cat.tools.map((tool: Tool) => (
+                <div
+                  key={tool.name}
+                  className="group flex items-center gap-2.5 rounded-full border border-white/10 bg-surface px-3 py-2 transition-all hover:border-primary/50 hover:shadow-glow"
+                >
+                  <ToolIcon toolName={tool.name} size={20} />
+                  <span className="font-mono text-sm text-text">{tool.name}</span>
                 </div>
-              </motion.div>
-            );
-          })}
-        </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </Section>
   );
