@@ -3,6 +3,7 @@ import {
   ChevronDown,
   ChevronUp,
   Database,
+  Download,
   Image as ImageIcon,
   Pencil,
   Plus,
@@ -40,6 +41,15 @@ const TABS: { key: TabKey; label: string }[] = [
 
 const byOrder = <T extends { sortOrder?: number }>(list: T[]): T[] =>
   [...list].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+/** Escape a value for CSV output (wrap in quotes if needed). */
+function csvEscape(value: unknown): string {
+  const s = String(value ?? "");
+  if (s.includes(",") || s.includes('"') || s.includes("\n")) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
 
 function Modal({
   title,
@@ -252,6 +262,86 @@ export function Editor({ onLogout }: { onLogout: () => void }) {
     }
   };
 
+  const exportCsv = () => {
+    const rows: string[] = [];
+    rows.push(["Type", "Name/Title", "Description", "Status/Position", "Links", "Stack/Tech"].map(csvEscape).join(","));
+
+    // Projects (Observatory)
+    for (const p of projects) {
+      rows.push(
+        [
+          "Project",
+          p.title,
+          p.oneLiner || p.overview || "",
+          p.position === "observatory" ? "Observatory" : p.position,
+          [p.links?.live, p.links?.repo].filter(Boolean).join(" | "),
+          (p.stack || []).join(" | "),
+        ]
+          .map(csvEscape)
+          .join(",")
+      );
+    }
+
+    // Gallery
+    for (const p of gallery) {
+      rows.push(
+        [
+          "Gallery",
+          p.title,
+          p.oneLiner || p.overview || "",
+          p.position,
+          [p.links?.live, p.links?.repo].filter(Boolean).join(" | "),
+          (p.stack || []).join(" | "),
+        ]
+          .map(csvEscape)
+          .join(",")
+      );
+    }
+
+    // Missions
+    for (const m of missions) {
+      rows.push(
+        [
+          "Mission",
+          m.title,
+          m.detail || "",
+          m.status || "",
+          [m.links?.live, m.links?.repo, m.certificate?.pdf].filter(Boolean).join(" | "),
+          (m.stack || []).join(" | "),
+        ]
+          .map(csvEscape)
+          .join(",")
+      );
+    }
+
+    // Tech
+    for (const t of tech) {
+      rows.push(
+        [
+          "Technology",
+          t.name,
+          "",
+          "",
+          "",
+          (t.projects || []).join(" | "),
+        ]
+          .map(csvEscape)
+          .join(",")
+      );
+    }
+
+    const csv = "\uFEFF" + rows.join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `observatory-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const openAdd = () => {
     if (tab === "missions") setModal({ kind: "mission" });
     else if (tab === "tech") setModal({ kind: "tech" });
@@ -273,6 +363,14 @@ export function Editor({ onLogout }: { onLogout: () => void }) {
           >
             <Database size={14} />
             Import site content
+          </button>
+          <button
+            onClick={exportCsv}
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted hover:text-text"
+            title="Export current site content as CSV"
+          >
+            <Download size={14} />
+            Export CSV
           </button>
           <button
             onClick={onLogout}
