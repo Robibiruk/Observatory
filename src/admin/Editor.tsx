@@ -263,19 +263,61 @@ export function Editor({ onLogout }: { onLogout: () => void }) {
   };
 
   const exportCsv = () => {
-    const rows: string[] = [];
-    rows.push(["Type", "Name/Title", "Description", "Status/Position", "Links", "Stack/Tech"].map(csvEscape).join(","));
+    const header = [
+      "Type",
+      "ID",
+      "Title",
+      "Slug",
+      "One-liner / Detail",
+      "Status",
+      "Position / Chapter",
+      "Year",
+      "Featured",
+      "Image",
+      "Alt text",
+      "Live URL",
+      "Repo URL",
+      "Certificate PDF",
+      "Overview",
+      "Architecture",
+      "Lessons",
+      "Stack",
+      "Features",
+      "Badge",
+      "Mission #",
+      "Chapter Label",
+      "Sort Order",
+    ];
+
+    const rows: string[] = [header.map(csvEscape).join(",")];
 
     // Projects (Observatory)
     for (const p of projects) {
       rows.push(
         [
           "Project",
+          p.id ?? "",
           p.title,
-          p.oneLiner || p.overview || "",
+          p.slug,
+          p.oneLiner ?? "",
+          p.status ?? "",
           p.position === "observatory" ? "Observatory" : p.position,
-          [p.links?.live, p.links?.repo].filter(Boolean).join(" | "),
-          (p.stack || []).join(" | "),
+          "",
+          p.featured ? "yes" : "",
+          p.image ?? "",
+          p.alt ?? "",
+          p.links?.live ?? "",
+          p.links?.repo ?? "",
+          "",
+          p.overview ?? "",
+          p.architecture ?? "",
+          p.lessons ?? "",
+          (p.stack ?? []).join(" | "),
+          (p.features ?? []).join(" | "),
+          "",
+          "",
+          "",
+          p.sortOrder ?? "",
         ]
           .map(csvEscape)
           .join(",")
@@ -287,11 +329,28 @@ export function Editor({ onLogout }: { onLogout: () => void }) {
       rows.push(
         [
           "Gallery",
+          p.id ?? "",
           p.title,
-          p.oneLiner || p.overview || "",
-          p.position,
-          [p.links?.live, p.links?.repo].filter(Boolean).join(" | "),
-          (p.stack || []).join(" | "),
+          p.slug,
+          p.oneLiner ?? "",
+          p.status ?? "",
+          p.position ?? "",
+          "",
+          p.featured ? "yes" : "",
+          p.image ?? "",
+          p.alt ?? "",
+          p.links?.live ?? "",
+          p.links?.repo ?? "",
+          "",
+          p.overview ?? "",
+          p.architecture ?? "",
+          p.lessons ?? "",
+          (p.stack ?? []).join(" | "),
+          (p.features ?? []).join(" | "),
+          "",
+          "",
+          "",
+          p.sortOrder ?? "",
         ]
           .map(csvEscape)
           .join(",")
@@ -303,11 +362,28 @@ export function Editor({ onLogout }: { onLogout: () => void }) {
       rows.push(
         [
           "Mission",
+          m.id ?? "",
           m.title,
-          m.detail || "",
-          m.status || "",
-          [m.links?.live, m.links?.repo, m.certificate?.pdf].filter(Boolean).join(" | "),
-          (m.stack || []).join(" | "),
+          "",
+          m.detail ?? "",
+          m.status ?? "",
+          m.chapter ?? "",
+          m.year ?? "",
+          "",
+          m.certificate?.image ?? "",
+          m.certificate?.alt ?? "",
+          m.links?.live ?? "",
+          m.links?.repo ?? "",
+          m.certificate?.pdf ?? "",
+          "",
+          "",
+          "",
+          (m.stack ?? []).join(" | "),
+          "",
+          m.badge ?? "",
+          m.mission ?? "",
+          m.chapterLabel ?? "",
+          m.sortOrder ?? "",
         ]
           .map(csvEscape)
           .join(",")
@@ -319,11 +395,28 @@ export function Editor({ onLogout }: { onLogout: () => void }) {
       rows.push(
         [
           "Technology",
+          t.id ?? "",
           t.name,
           "",
           "",
           "",
-          (t.projects || []).join(" | "),
+          "",
+          "",
+          "",
+          t.icon ?? "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          t.sortOrder ?? "",
         ]
           .map(csvEscape)
           .join(",")
