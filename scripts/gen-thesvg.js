@@ -16,7 +16,7 @@ const slugs = [
   'visual-studio', 'sublime-text', 'clion', 'pycharm', 'intellij-idea', 'postman',
   'npm', 'streamlit', 'figma', 'photoshop', 'after-effects', 'premierepro', 'blender',
   'obsidian', 'notion', 'discord', 'stack-overflow', 'instagram', 'linkedin',
-  'x-formerly-twitter'
+  'x-formerly-twitter', 'tiktok', 'pinterest'
 ];
 
 const svgMap = {};

@@ -100,16 +100,24 @@ export function Navbar() {
           className="glass absolute top-20 left-4 right-4 z-50 rounded-2xl p-3 md:hidden"
         >
           <ul className="flex flex-col">
-            {NAV.map((n) => (
-              <li key={n.id}>
-                <button
-                  onClick={() => go(n.id)}
-                  className="w-full rounded-xl px-4 py-3 text-left text-text hover:bg-white/5"
-                >
-                  {n.label}
-                </button>
-              </li>
-            ))}
+            {NAV.map((n) => {
+              const isActive = active === n.id;
+              return (
+                <li key={n.id}>
+                  <button
+                    onClick={() => go(n.id)}
+                    aria-current={isActive ? "true" : undefined}
+                    className={`w-full rounded-xl px-4 py-3 text-left transition-colors ${
+                      isActive
+                        ? "bg-primary/15 text-highlight"
+                        : "text-text hover:bg-white/5"
+                    }`}
+                  >
+                    {n.label}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </motion.div>
       )}

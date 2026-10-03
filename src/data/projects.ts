@@ -75,33 +75,36 @@ export const projects: Project[] = [
     stack: ["React", "Vite", "Firebase", "Three.js", "GSAP", "Framer Motion"],
   },
   {
-    id: 3,
-    slug: "medreminder",
-    title: "MedReminder",
+    id: 5,
+    slug: "cleancity",
+    title: "CleanCity",
     oneLiner:
-      "Medication reminder app with an AI layer (OpenRouter) for natural scheduling.",
+      "Environmental reporting platform for tracking and visualizing city cleanliness metrics.",
     status: "live",
     featured: false,
     position: "both",
     sortOrder: 2,
-    image: "/projects/medreminder.png",
-    alt: "MedReminder app showing medication schedule and adherence chart",
+    image: "/projects/clean-city.png",
+    alt: "CleanCity dashboard showing environmental reporting metrics and city cleanliness visualization",
     links: {
-      live: "https://community-pharmacy-reminder.onrender.com",
-      repo: "https://github.com/Robibiruk/Medicine-Reminder-project",
+      live: "https://clean-city-app.vercel.app",
+      repo: "https://github.com/Robibiruk/CleanCity",
     },
     overview:
-      "MedReminder helps users stay on top of medication schedules. An AI layer (OpenRouter) parses natural-language instructions into structured reminders, and adherence is visualized with charts so users and caregivers can spot patterns.",
+      "CleanCity is a platform for tracking and visualizing city cleanliness metrics. Users can report cleanliness issues, view aggregated data on urban hygiene, and track improvement patterns over time. The application focuses on making environmental data accessible and actionable for community members and local governments.",
     architecture:
-      "React + Vite + Tailwind client with Framer Motion micro-interactions and Recharts adherence graphs, backed by an Express + MongoDB API. Firebase handles auth; the AI scheduling path calls OpenRouter to convert free-text dosing instructions into reminder objects.",
+      "React + Vite + TypeScript frontend with Tailwind CSS for styling. Node.js + Express API backend with PostgreSQL database. Real-time updates via WebSockets. Deployed on Vercel with PostgreSQL.",
     features: [
-      "Natural-language → structured schedule (OpenRouter)",
-      "Adherence tracking with Recharts visualizations",
-      "Cross-device auth via Firebase",
+      "Issue reporting system for cleanliness problems",
+      "Interactive maps with issue locations",
+      "Adherence tracking and improvement patterns",
+      "Community voting and prioritization",
+      "Data visualization with Recharts",
+      "Role-based views for residents vs administrators",
     ],
     lessons:
-      "Letting users type reminders in plain language (vs rigid forms) dramatically lowered onboarding friction — the AI parsing step earned its place.",
-    stack: ["React", "Vite", "Tailwind", "Express", "MongoDB", "Firebase", "Framer Motion", "Recharts", "OpenRouter"],
+      "Converting ad-hoc community reporting into structured data required designing intuitive workflows and clear visualizations that motivate consistent participation.",
+    stack: ["React", "Vite", "TypeScript", "Tailwind CSS", "Node.js", "Express", "PostgreSQL", "WebSockets", "Vercel"],
   },
   {
     id: 16,
@@ -113,7 +116,7 @@ export const projects: Project[] = [
     featured: false,
     position: "observatory",
     sortOrder: 3,
-    image: "/projects/devwrapped.png",
+    image: "/projects/devwrapped.jpg",
     alt: "DevWrapped annual developer statistics and GitHub activity story",
     links: {
       live: "https://devwrapped-app.vercel.app/",
@@ -149,7 +152,7 @@ export const projects: Project[] = [
     featured: false,
     position: "both",
     sortOrder: 4,
-    image: "/projects/spiderman-readme.png",
+    image: "/projects/spiderman-readme.jpg",
     alt: "Animated Spider-Verse themed GitHub profile README showing developer statistics",
     links: {
       live: "https://spiderman-github-readme.vercel.app/",
@@ -184,7 +187,7 @@ export const projects: Project[] = [
     featured: false,
     position: "both",
     sortOrder: 5,
-    image: "/projects/repopages.png",
+    image: "/projects/repopages.jpg",
     alt: "RepoPages interface generating a product landing page from a GitHub repository",
     links: {
       live: "https://repo-to-landing-page.vercel.app/",
@@ -209,113 +212,71 @@ export const projects: Project[] = [
       "Building AI-powered developer tools, turning unstructured repository information into structured product content, designing reusable components for dynamically generated websites, automating the transition from software project to product presentation, and building tools that improve developer workflows.",
     stack: ["React", "TypeScript", "Vite", "AI/LLM APIs", "Github API", "Modern CSS", "Vercel"],
   },
-];
-
-// ----------------------------------------------------------------------------
-// Museum-only extras — shown in the Museum marquee but NOT in the Projects
-// bento grid or the Technology Constellation (per request). These are the
-// menstrual/period tracker (in development) plus two projects carried over
-// from the previous portfolio site.
-// ----------------------------------------------------------------------------
-export const museumExtras: Project[] = [
+  // Client Work projects — commissioned deliverables
   {
-    id: 4,
-    slug: "menstrual-tracker",
-    title: "Menstrual / Period Tracking App",
+    id: 20,
+    slug: "craftrix-consultancy",
+    title: "Craftrix Consultancy",
     oneLiner:
-      "A calm, ad-free cycle and pregnancy tracking app — emoji UI, RTL support, no clutter.",
+      "Business consultancy website — clean, professional presence for a consulting firm.",
     status: "live",
-    featured: false,
-    position: "gallery",
+    featured: true,
+    position: "both",
     sortOrder: 6,
-    image: "/projects/menstrual.jpg",
-    alt: "Menstrual and period tracking app home screen with cycle overview",
+    image: "/projects/craftrix.jpg",
+    alt: "Craftrix Consultancy website homepage showing services and contact information",
     links: {
-      live: "https://atnasya-health.netlify.app/",
-      repo: "https://github.com/Robibiruk/atnasya-health-frontend",
+      live: "https://craftrix-consultancy.netlify.app",
+      repo: "",
     },
     overview:
-      "A period and cycle tracking app focused on a friendly, ad-free experience. Built with an emoji-driven UI, right-to-left language support, and a clean information architecture that keeps the user's data first.",
+      "Craftrix Consultancy is a professional business website built to establish an online presence for a consulting firm. The site features a clean, minimal design with service offerings, about section, and contact functionality. Built with a focus on readability, navigation, and converting visitors into clients.",
     architecture:
-      "React/Vite/TypeScript/Tailwind client with an Express + MongoDB backend (Atlas).",
+      "React + Vite + TypeScript frontend with Tailwind CSS for rapid styling. Static site generation for fast performance. Netlify deployment with form handling for contact inquiries.",
     features: [
-      "Ad-free, emoji-led UI",
-      "Right-to-left (RTL) language support",
-      "Cycle + pregnancy tracking modes",
-    ],
-    lessons: "",
-    stack: ["React", "Vite", "TypeScript", "Tailwind", "Express", "MongoDB"],
-  },
-  {
-    id: 5,
-    slug: "clean-city",
-    title: "CleanCity",
-    oneLiner:
-      "A community environmental reporting platform for mapping, validating, and resolving local problems.",
-    status: "live",
-    featured: false,
-    position: "observatory",
-    sortOrder: 7,
-    image: "/projects/clean-city.png",
-    alt: "CleanCity environmental reporting map showing community reports in Addis Ababa",
-    links: {
-      live: "https://clean-city-report.vercel.app/",
-      repo: "https://github.com/Robibiruk/clean-city",
-    },
-    overview:
-      "CleanCity is a community environmental reporting platform that allows residents to report local problems directly on an interactive map. Users can select a location, attach an image, categorize an issue, and publish the report to a shared community feed. The platform combines geospatial visualization with community validation through upvotes and a resolution workflow. Reports can be marked as solved or identified as false, while statistics provide an overview of the community's environmental issues.",
-    architecture:
-      "React/Vite Frontend → Express REST API → MongoDB Atlas. The frontend uses React, React Router, Leaflet, and shared report state to synchronize the interactive map and community feed. The Express backend provides REST endpoints for report creation, image uploads, statistics, upvotes, resolution, and deletion. MongoDB Atlas stores report data while Multer handles uploaded images.",
-    features: [
-      "Interactive environmental map",
-      "Location-based reporting",
-      "Image uploads",
-      "Environmental issue categories",
-      "Community upvotes",
-      "Report resolution workflow",
-      "False-report removal",
-      "Community statistics",
-      "Category filtering",
-      "Live report updates",
-      "Street, satellite, and dark map layers",
-      "Interactive report markers",
-      "Detailed report view",
-      "Responsive dark interface",
+      "Responsive design mobile-first",
+      "Service offerings section",
+      "About section with mission statement",
+      "Contact form with Netlify integration",
+      "SEO-optimized markup structure",
+      "Fast load times with static generation",
     ],
     lessons:
-      "Building location-based applications with interactive maps, integrating Leaflet with React, designing REST APIs for community-generated content, handling multipart image uploads, modeling report status and community validation, and synchronizing shared state between a map and feed.",
-    stack: ["React 19", "Vite", "Tailwind CSS", "Leaflet", "React Router", "Node.js", "Express", "Multer", "MongoDB Atlas"],
+      "Building a professional service website from scratch, designing clean UI hierarchies, implementing responsive layouts, and integrating form handling without a traditional backend.",
+    stack: ["React", "Vite", "TypeScript", "Tailwind CSS", "Netlify"],
   },
   {
-    id: 6,
-    slug: "data-analysis-python",
-    title: "Data Analysis with Python",
+    id: 21,
+    slug: "sami-edits",
+    title: "SAMI EDITS",
     oneLiner:
-      "A Jupyter Notebook assignment analyzing datasets — cleaning, visualization, and basic analysis.",
+      "Creative portfolio website for a digital editor and content creator.",
     status: "live",
-    featured: false,
-    position: "gallery",
-    sortOrder: 8,
-    image: "/projects/data-analysis.jpeg",
-    alt: "Jupyter notebook with Python data analysis and Streamlit dashboard",
+    featured: true,
+    position: "both",
+    sortOrder: 7,
+    image: "/projects/sami-edits.jpg",
+    alt: "SAMI EDITS creative portfolio homepage showcasing editing work and projects",
     links: {
-      live: "https://cord19-sample-analysis.streamlit.app/",
-      repo: "https://github.com/Robibiruk/Data_Analaysis_Python_Week_7_Assignment",
+      live: "https://sami-edits.netlify.app",
+      repo: "",
     },
     overview:
-      "A Jupyter Notebook assignment analyzing datasets, performing data cleaning, visualization, and basic analysis using Python libraries.",
-    architecture: "",
-    features: ["Data cleaning with Pandas", "Visualization", "Streamlit deployment"],
-    lessons: "",
-    stack: ["Python", "Jupyter", "Pandas", "Streamlit", "Data Viz"],
+      "SAMI EDITS is a creative portfolio website built for a digital editor and content creator. The site features a visually-driven layout with project showcase, editing capabilities highlight, and contact functionality. Designed to showcase creative work with strong typography and imagery focus.",
+    architecture:
+      "React + Vite + TypeScript frontend with Tailwind CSS for styling. Animated sections and interactive elements using Framer Motion. Deployed on Netlify with smooth page transitions.",
+    features: [
+      "Creative portfolio showcase",
+      "Project gallery with filtering",
+      "About section with editor's statement",
+      "Contact form with Netlify integration",
+      "Framer Motion animations for section transitions",
+      "Dark mode support with color-scheme",
+    ],
+    lessons:
+      "Creating a visually-driven portfolio that puts creative work front-and-center, implementing smooth animations without sacrificing performance, and designing for both dark and light color schemes.",
+    stack: ["React", "Vite", "TypeScript", "Tailwind CSS", "Framer Motion"],
   },
 ];
 
-// Combined list for the Museum marquee (real apps + extras).
-export const museumProjects = [...projects, ...museumExtras];
-
-// Derived helpers used by Projects / Constellation.
-export const featuredProjects = projects.filter((p) => p.featured);
-export const sortedProjects = [...projects].sort(
-  (a, b) => Number(b.featured) - Number(a.featured)
-);
+export const museumProjects = projects;

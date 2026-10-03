@@ -198,6 +198,13 @@ export function Museum({ glow = false }: { glow?: boolean }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const speedMultiplier = useRef(1);
 
+  // Grab-and-drag state (desktop marquee): pointer-driven offset control with
+  // momentum on release. `suppressClick` stops a drag-release click from
+  // opening the card modal. Refs (not state) — read every animation frame.
+  const drag = useRef({ active: false, moved: false, startX: 0, startOffset: 0, lastX: 0, lastT: 0, velocity: 0 });
+  const momentum = useRef(0);
+  const suppressClick = useRef(false);
+
   // Desktop: track-based marquee with click to open modal.
   // Tablet/Mobile: simple scroll-snap carousel.
   
@@ -223,26 +230,40 @@ export function Museum({ glow = false }: { glow?: boolean }) {
     track.addEventListener("mousemove", onMove);
     track.addEventListener("mouseleave", onLeave);
 
+    const wrap = () => {
+      const w = halfWidth();
+      if (offsetRef.current <= -w) offsetRef.current += w;
+      if (offsetRef.current >= 0) offsetRef.current -= w;
+    };
+
     const frame = (now: number) => {
       const dt = Math.min(now - last, 50);
       last = now;
       if (!active) {
-        let speed = BASE * speedMultiplier.current;
-        if (mouseX >= 0) {
-          const rel = (mouseX - rect.left) / rect.width;
-          if (rel > 0.75) {
-            direction.current = 1;
-          } else if (rel < 0.25) {
-            const t = 1 - rel / 0.25;
-            speed = (BASE + BOOST * t) * speedMultiplier.current;
-          } else {
-            direction.current = -1;
+        if (drag.current.active) {
+          // Offset is being written by pointermove — just keep it wrapped.
+          wrap();
+        } else if (Math.abs(momentum.current) > 0.02) {
+          // Fling momentum after a drag release, decaying to a stop.
+          offsetRef.current += momentum.current * dt;
+          momentum.current *= Math.pow(0.94, dt / 16.7);
+          wrap();
+        } else {
+          let speed = BASE * speedMultiplier.current;
+          if (mouseX >= 0) {
+            const rel = (mouseX - rect.left) / rect.width;
+            if (rel > 0.75) {
+              direction.current = 1;
+            } else if (rel < 0.25) {
+              const t = 1 - rel / 0.25;
+              speed = (BASE + BOOST * t) * speedMultiplier.current;
+            } else {
+              direction.current = -1;
+            }
           }
+          offsetRef.current += direction.current * speed * dt;
+          wrap();
         }
-        offsetRef.current += direction.current * speed * dt;
-        const w = halfWidth();
-        if (offsetRef.current <= -w) offsetRef.current += w;
-        if (offsetRef.current >= 0) offsetRef.current -= w;
         track.style.transform = `translate3d(${offsetRef.current}px,0,0)`;
       }
       raf = requestAnimationFrame(frame);
@@ -318,6 +339,67 @@ export function Museum({ glow = false }: { glow?: boolean }) {
     setActive(p);
   };
 
+  // --- Grab-and-drag (desktop marquee, pointer events = mouse + touch) ---
+  const onTrackPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    const track = trackRef.current;
+    if (!track) return;
+    drag.current = {
+      active: true,
+      moved: false,
+      startX: e.clientX,
+      startOffset: offsetRef.current,
+      lastX: e.clientX,
+      lastT: performance.now(),
+      velocity: 0,
+    };
+    momentum.current = 0;
+    try { track.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
+    track.classList.add("cursor-grabbing");
+  };
+
+  const onTrackPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d.active) return;
+    const dx = e.clientX - d.startX;
+    if (Math.abs(dx) > 6) d.moved = true;
+    offsetRef.current = d.startOffset + dx;
+    const now = performance.now();
+    const dt = now - d.lastT;
+    if (dt > 0) {
+      d.velocity = (e.clientX - d.lastX) / dt;
+      d.lastX = e.clientX;
+      d.lastT = now;
+    }
+  };
+
+  const onTrackPointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d.active) return;
+    d.active = false;
+    const track = trackRef.current;
+    if (track) {
+      try { track.releasePointerCapture(e.pointerId); } catch { /* not captured */ }
+      track.classList.remove("cursor-grabbing");
+    }
+    if (d.moved) {
+      suppressClick.current = true;
+      momentum.current = d.velocity;
+      // Resume the drift in the direction the user was last dragging.
+      if (d.velocity > 0.05) direction.current = 1;
+      else if (d.velocity < -0.05) direction.current = -1;
+      // The click event fires right after pointerup — clear the flag next task.
+      setTimeout(() => { suppressClick.current = false; }, 0);
+    }
+  };
+
+  const onTrackClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (suppressClick.current) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  };
+
   const items = isDesktop ? [...museumProjects, ...museumProjects] : museumProjects;
   const itemWidthClass = mode === "mobile" ? "w-screen shrink-0 snap-center" : "w-screen shrink-0 snap-center";
 
@@ -347,10 +429,20 @@ export function Museum({ glow = false }: { glow?: boolean }) {
 
         <div
           ref={trackRef}
+          {...(!isDesktop || reduced ? { "data-lenis-prevent": true } : {})}
+          {...(isDesktop && !reduced
+            ? {
+                onPointerDown: onTrackPointerDown,
+                onPointerMove: onTrackPointerMove,
+                onPointerUp: onTrackPointerEnd,
+                onPointerCancel: onTrackPointerEnd,
+                onClickCapture: onTrackClickCapture,
+              }
+            : {})}
           className={
             isDesktop
-              ? `relative z-[1] flex w-max ${reduced ? "overflow-x-auto px-6" : "px-3 select-none cursor-grab will-change-transform"}`
-              : "-mx-6 relative z-[1] flex w-full snap-x snap-mandatory overflow-x-auto px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              ? `relative z-[1] flex w-max ${reduced ? "overflow-x-auto overscroll-contain px-6" : "px-3 select-none cursor-grab will-change-transform"}`
+              : "-mx-6 relative z-[1] flex w-full snap-x snap-mandatory overflow-x-auto overscroll-contain px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           }
           style={isDesktop && !reduced ? { touchAction: "pan-y" } : undefined}
         >

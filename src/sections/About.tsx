@@ -5,9 +5,10 @@ import { Socials } from "../components/Socials";
 import { primarySocials } from "../data/socials";
 
 /**
- * About "Island" — photo + mission + Currently building / learning cards.
- * Photo is optional: drop an image at public/profile.webp; if absent we render
- * a branded monogram so the layout never breaks.
+ * About "Island" — client-focused profile. Photo + mission + experience
+ * building products for real users/businesses. Photo is optional: drop an
+ * image at public/profile.webp; if absent we render a branded monogram so
+ * the layout never breaks.
  */
 export function About({ glow = false }: { glow?: boolean }) {
   return (
@@ -15,7 +16,7 @@ export function About({ glow = false }: { glow?: boolean }) {
       <div className="mx-auto max-w-5xl">
         <p className="eyebrow mb-3">About</p>
         <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">
-          The builder behind the lens
+          I build intelligent tools for real users
         </h2>
 
         <div className="mt-12 grid items-center gap-10 md:grid-cols-[260px_1fr]">
@@ -47,20 +48,37 @@ export function About({ glow = false }: { glow?: boolean }) {
           </div>
 
           <div>
-            <p className="text-lg leading-relaxed text-muted">{site.mission}</p>
+            <p className="text-lg leading-relaxed text-muted">
+              I design and ship AI-first digital products that are useful, reliable, and built to last.
+              
+              From AI assistants and developer tools to platforms for real communities, I turn ideas into working products with thoughtful UX, solid architecture, and clean delivery.
+            </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
+
               <Card
-                icon={<Code2 size={18} />}
-                title="Currently building"
-                items={site.currentlyBuilding}
-              />
-              <Card
-                icon={<BookOpen size={18} />}
-                title="Currently learning"
-                items={site.currentlyLearning}
-              />
-            </div>
+                  icon={<Code2 size={18} />}
+                  title="Products Shipped"
+                  items={[
+                            "PulseWatch — self-hosted uptime monitoring",
+                            "Nira AI — local-first desktop assistant",
+                            "DevWrapped — GitHub activity storytelling",
+                            "RepoPages — GitHub repo to landing page",
+                            "CleanCity — environmental reporting platform",
+    ]}
+  />
+
+  <Card
+    icon={<BookOpen size={18} />}
+    title="Client Collaboration"
+    items={[
+      "Business websites and digital experiences",
+      "AI tool integration and deployment",
+      "Full-stack products from concept to launch",
+      "Fast, scalable static sites with modern tooling",
+    ]}
+  />
+</div>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Socials links={primarySocials} />

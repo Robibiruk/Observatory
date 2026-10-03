@@ -85,6 +85,8 @@ export const TOOL_ICON_MAP: Record<string, { devicon?: string; thesvg?: string }
   Instagram: { thesvg: "instagram" },
   LinkedIn: { thesvg: "linkedin" },
   X: { thesvg: "x-formerly-twitter" },
+  TikTok: { thesvg: "tiktok" },
+  Pinterest: { thesvg: "pinterest" },
 };
 
 // Get icon source for a tool name

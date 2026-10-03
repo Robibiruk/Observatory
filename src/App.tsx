@@ -94,10 +94,6 @@ export default function App() {
   // Single scroll-spy: drives both the navbar highlight and the per-section
   // glow. Lifted here so it isn't duplicated by the Navbar.
   useEffect(() => {
-    const sections = NAV_IDS.map((id) => document.getElementById(id)).filter(
-      Boolean
-    ) as HTMLElement[];
-    if (!sections.length) return;
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -106,8 +102,31 @@ export default function App() {
       },
       { rootMargin: "-45% 0px -50% 0px" }
     );
-    sections.forEach((s) => obs.observe(s));
-    return () => obs.disconnect();
+
+    // Sections below the fold are lazy-mounted (LazyMount), so they don't
+    // exist on first paint. Observe whatever is mounted now, then watch
+    // <main> and pick up each section as it appears.
+    const observed = new Set<string>();
+    const observeMounted = () => {
+      NAV_IDS.forEach((id) => {
+        if (observed.has(id)) return;
+        const el = document.getElementById(id);
+        if (el) {
+          obs.observe(el);
+          observed.add(id);
+        }
+      });
+    };
+    observeMounted();
+
+    const main = document.querySelector("main");
+    const mo = new MutationObserver(observeMounted);
+    if (main) mo.observe(main, { childList: true, subtree: true });
+
+    return () => {
+      obs.disconnect();
+      mo.disconnect();
+    };
   }, []);
 
   // /admin is a separate lightweight route — no loader, no starfield.

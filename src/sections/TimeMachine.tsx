@@ -19,7 +19,7 @@ const STATUS_STYLES: Record<TimelineStatus, string> = {
 };
 const STATUS_LABEL: Record<TimelineStatus, string> = {
   complete: "Mission Complete",
-  live: "Active Mission",
+  live: "Current Mission",
   future: "Uncharted",
 };
 
@@ -149,10 +149,10 @@ function MissionCard({
         </div>
         <div className="glass relative z-10 overflow-hidden rounded-3xl border-sky-300/30 p-8 text-center">
           <div className="font-mono text-xs text-sky-300">Future Mission</div>
-          <h3 className="mt-2 font-display text-3xl font-bold text-text">???</h3>
-          <p className="mt-2 text-muted">Coming Soon</p>
+          <h3 className="mt-2 font-display text-3xl font-bold text-text">The Next Sector</h3>
+          <p className="mt-2 text-muted">The map is still expanding.</p>
           <p className="mt-4 text-sm text-muted">
-            The wormhole opens. The path folds through spacetime — board the next mission.
+            More ambitious systems. Harder problems. Products that have to survive outside the development environment.
           </p>
         </div>
       </article>
@@ -432,11 +432,10 @@ export function TimeMachine({ glow = false }: { glow?: boolean }) {
           <div className="mx-auto max-w-6xl text-center">
             <p className="eyebrow mb-3 text-sm sm:text-base">The Observatory Expedition</p>
             <h2 className="font-display text-4xl font-bold text-text sm:text-5xl">
-              Become the mission commander
+              From learning to shipping
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted">
-              Every scroll is a journey farther into the universe. Each milestone is a newly
-              discovered sector. The scanner follows your cursor — look closer.
+              Every mission marks a shift in what I could build, not just another project.
             </p>
           </div>
 
@@ -480,9 +479,9 @@ export function TimeMachine({ glow = false }: { glow?: boolean }) {
 
           {/* final invitation into contact */}
           <div className="relative mx-auto mt-24 max-w-2xl text-center">
-            <div className="font-mono text-xs uppercase tracking-widest text-primary/60">Next Mission</div>
-            <h3 className="mt-2 font-display text-3xl font-bold text-text">Building the Future</h3>
-            <p className="mt-2 text-muted">Join the journey.</p>
+            <div className="font-mono text-xs uppercase tracking-widest text-primary/60">Future Mission</div>
+            <h3 className="mt-2 font-display text-3xl font-bold text-text">The expedition continues.</h3>
+            <p className="mt-2 text-muted">Board the next mission.</p>
             <a
               href="#contact"
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-white transition hover:shadow-glow-primary"
