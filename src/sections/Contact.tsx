@@ -64,7 +64,7 @@ export function Contact({ glow = false }: { glow?: boolean }) {
             <Github size={16} /> GitHub
           </a>
           <a
-            href="https://linkedin.com/in/robel-biruk-72084636b"
+            href="https://linkedin.com/in/robel-biruk"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm text-muted hover:text-highlight"

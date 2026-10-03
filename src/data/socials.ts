@@ -8,7 +8,7 @@ export const socials: SocialLink[] = [
   { label: "GitHub", href: "https://github.com/Robibiruk", icon: "github" },
   {
     label: "LinkedIn",
-    href: "https://linkedin.com/in/robel-biruk-72084636b",
+    href: "https://linkedin.com/in/robel-biruk",
     icon: "linkedin",
   },
   { label: "Instagram", href: "https://instagram.com/ynw_rob.i", icon: "instagram" },
